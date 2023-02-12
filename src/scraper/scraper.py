@@ -12,7 +12,6 @@ for submission in subreddit.hot(limit = 10):
     submissions.add(submission)
 
 df = pd.DataFrame(submissions)
-
 df.to_csv('data/raw/titles.csv', header = False, index = False, encoding = 'utf-8')
 
 sia = SIA()
@@ -30,9 +29,15 @@ for x in scores:
     df.loc[df['compound'] > 0.5, 'strong'] = True 
     df.loc[df['compound'] < -0.5, 'strong'] = True
 
-# TODO: remove not strong sentiments from list
-strong = df.to_dict()
-for x in strong:
-    print(strong[x])
+df_dict = df.to_dict()
+strong = []
+i = 0
 
-df.to_csv('data/processed/scores.csv', header = False, index = False, encoding = 'utf-8')
+for x in df_dict['strong']:
+    if df_dict['strong'][i]:
+        strong.append(df_dict['submission'][i])
+
+    i = i + 1
+
+df = pd.DataFrame(strong)
+df.to_csv('data/processed/strong.csv', header = False, index = False, encoding = 'utf-8')
