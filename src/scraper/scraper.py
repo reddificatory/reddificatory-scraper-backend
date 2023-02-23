@@ -5,39 +5,62 @@ import nltk
 from nltk.sentiment.vader import SentimentIntensityAnalyzer as SIA
 
 reddit = praw.Reddit(client_id = config.CLIENT_ID, client_secret = config.CLIENT_SECRET, user_agent = config.CLIENT_AGENT)
-subreddit = reddit.subreddit('askreddit')
 
-submissions = set()
-for submission in subreddit.hot(limit = 10):
-    submissions.add(submission)
+def collect_submissions(subreddit):
+    submissions = set()
+    for submission in subreddit.hot(limit = 50):
+        submissions.add(submission)
 
-df = pd.DataFrame(submissions)
-df.to_csv('data/raw/titles.csv', header = False, index = False, encoding = 'utf-8')
+    return submissions
 
-sia = SIA()
-scores = []
+def decide_strong_submissions(scores):
+    df = pd.DataFrame(scores)
+    
+    for score in scores:
+        df['strong'] = False
+        df.loc[df['compound'] > 0.5, 'strong'] = True 
+        df.loc[df['compound'] < -0.5, 'strong'] = True
 
-for x in submissions:
-    pol_score = sia.polarity_scores(x.title)
-    pol_score['submission'] = x
-    scores.append(pol_score)
+    return df    
 
-df = pd.DataFrame.from_records(scores)
+def get_strong_submissions(df):
+    df_dict = df.to_dict()
+    strongs = []
+    i = 0
 
-for x in scores:
-    df['strong'] = False
-    df.loc[df['compound'] > 0.5, 'strong'] = True 
-    df.loc[df['compound'] < -0.5, 'strong'] = True
+    for x in df_dict['strong']:
+        if df_dict['strong'][i]:
+            strongs.append(df_dict['submission'][i])
 
-df_dict = df.to_dict()
-strong = []
-i = 0
+        i = i + 1
 
-for x in df_dict['strong']:
-    if df_dict['strong'][i]:
-        strong.append(df_dict['submission'][i])
+    return strongs
 
-    i = i + 1
+def analize_submissions(submissions):
+    sia = SIA()
+    scores = []
 
-df = pd.DataFrame(strong)
-df.to_csv('data/processed/strong.csv', header = False, index = False, encoding = 'utf-8')
+    for submission in submissions:
+        pol_score = sia.polarity_scores(submission.title)
+        pol_score['submission'] = submission
+        scores.append(pol_score)
+
+    decided = decide_strong_submissions(scores)
+    strongs = get_strong_submissions(decided)
+
+    return strongs
+
+def scrape_subreddit(subreddit):
+    subreddit = reddit.subreddit(subreddit)
+    submissions = collect_submissions(subreddit)
+
+    return analize_submissions(submissions)
+
+# def scrape_submission(submissions):
+#     for x in submissions:
+#         for y in x.comments:
+#             print(y.body)
+
+# scrape_submission(scrape_subreddit('askreddit'))
+
+print(scrape_subreddit('askreddit'))
