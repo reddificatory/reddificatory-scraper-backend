@@ -1,7 +1,7 @@
 import psycopg2
 import sys
 
-sys.path.insert(0, 'D:\coding\python-reddit-tts\src\scraper')
+sys.path.insert(0, 'D:\coding\python-reddit-tts\src')
 
 import config
 

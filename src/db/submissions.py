@@ -1,8 +1,3 @@
-import sys
-sys.path.insert(0, 'D:\coding\python-reddit-tts\src')
-
-import config
-import psycopg2
 from database import cursor, db
 
 def check_submission(id):

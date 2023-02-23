@@ -1,6 +1,4 @@
-import config
-import psycopg2
-from database import cursor
+from database import cursor, db
 
 def store_comments():
     return 0
