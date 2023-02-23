@@ -1,10 +1,15 @@
+import sys
+sys.path.insert(0, 'D:\coding\python-reddit-tts\src\db')
+sys.path.insert(0, 'D:\coding\python-reddit-tts\src')
+
 import config
+from submissions import store_submissions
 import praw
 import pandas as pd
 import nltk
 from nltk.sentiment.vader import SentimentIntensityAnalyzer as SIA
 
-reddit = praw.Reddit(client_id = config.CLIENT_ID, client_secret = config.CLIENT_SECRET, user_agent = config.CLIENT_AGENT)
+REDDIT = praw.Reddit(client_id = config.CLIENT_ID, client_secret = config.CLIENT_SECRET, user_agent = config.CLIENT_AGENT)
 
 def collect_submissions(subreddit):
     submissions = set()
@@ -51,16 +56,9 @@ def analize_submissions(submissions):
     return strongs
 
 def scrape_subreddit(subreddit):
-    subreddit = reddit.subreddit(subreddit)
+    subreddit = REDDIT.subreddit(subreddit)
     submissions = collect_submissions(subreddit)
 
     return analize_submissions(submissions)
 
-# def scrape_submission(submissions):
-#     for x in submissions:
-#         for y in x.comments:
-#             print(y.body)
-
-# scrape_submission(scrape_subreddit('askreddit'))
-
-print(scrape_subreddit('askreddit'))
+store_submissions(scrape_subreddit('askreddit'))
