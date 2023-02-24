@@ -6,16 +6,17 @@ import config
 from sentiment_analyzer import is_strong
 from db.submissions import store_submission
 
-def scrape_subreddit(client, subreddit):
+def scrape_subreddit(subreddit):
+    client = config.REDDIT_CLIENT
     subreddit = client.subreddit(subreddit)
     submissions = set()
     
     for submission in subreddit.hot(limit = 50):
         if is_strong(submission.title):
             submissions.add(submission)
-            store_submission(submission)
+            store_submission(submission.id)
 
     return submissions
 
 # TODO: when done with code, remove print
-print(scrape_subreddit(config.REDDIT_CLIENT, 'askreddit'))
+print(scrape_subreddit('askreddit'))
