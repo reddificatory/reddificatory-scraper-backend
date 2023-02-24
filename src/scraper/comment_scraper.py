@@ -1,5 +1,4 @@
 import sys
-
 sys.path.insert(0, 'D:\coding\python-reddit-tts\src\db')
 sys.path.insert(0, 'D:\coding\python-reddit-tts\src')
 
@@ -13,13 +12,11 @@ def scrape_comments(client, submission):
     submission = client.submission(submission[0])
     comments = set()
 
-    submission.comments.replace_more(limit=None)
+    submission.comments.replace_more(limit=50)
     for comment in submission.comments:
         if is_strong(comment.body):
             comments.add(comment)
             store_comment(comment, submission)
-            update_submission(submission)
+            update_submission(submission, 'scraped')
 
     return comments
-
-print(scrape_comments(config.REDDIT_CLIENT, get_random_submission()))
