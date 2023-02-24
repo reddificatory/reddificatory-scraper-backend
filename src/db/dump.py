@@ -8,8 +8,7 @@ def create_tables():
     tables = [
         """
             CREATE TABLE IF NOT EXISTS submissions (
-                "uuid" uuid DEFAULT uuid_generate_v4 () PRIMARY KEY,
-                "submission_id" VARCHAR ( 16 ) UNIQUE NOT NULL,
+                "submission_id" VARCHAR ( 16 ) UNIQUE NOT NULL PRIMARY KEY,
                 "used" BOOLEAN DEFAULT FALSE,
                 "created_at" TIMESTAMP NOT NULL DEFAULT (current_timestamp),
                 "updated_at" TIMESTAMP NOT NULL DEFAULT (current_timestamp)
