@@ -21,4 +21,4 @@ def scrape_comments(submission):
 
     return comments
 
-print(scrape_comments(get_random_submission('scraped')))
+print(scrape_comments(get_random_submission()))
