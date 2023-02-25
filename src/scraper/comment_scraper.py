@@ -1,24 +1,27 @@
 import sys
-sys.path.insert(0, 'D:\coding\python-reddit-tts\src\db')
 sys.path.insert(0, 'D:\coding\python-reddit-tts\src')
 
 import config
-from db.comments import store_comment
-from db.submissions import get_random_submission, update_submission
-from sentiment_analyzer import is_strong
-# from praw.models import MoreComments
+import db.comments
+import db.submissions
+import scraper.sentiment_analyzer
 
-def scrape_comments(submission):
-    submission = config.REDDIT_CLIENT.submission(submission)
+def scrape_comments(submission_id):
+    submission = config.REDDIT_CLIENT.submission(submission_id)
     comments = set()
 
-    submission.comments.replace_more(limit=50)
+    submission.comments.replace_more(limit=20)
     for comment in submission.comments:
-        if is_strong(comment.body):
+        if scraper.sentiment_analyzer.is_strong(comment.body):
             comments.add(comment)
-            store_comment(comment.id, submission.id)
-            update_submission(submission.id, 'scraped')
+            db.comments.store_comment(comment.id, submission.id)
+            db.submissions.update_submission(submission.id, 'scraped')
 
     return comments
 
-print(scrape_comments(get_random_submission()))
+# random_submission = db.submissions.get_random_submission('used')
+
+# if not random_submission:
+#     print('No submissions to scrape')
+# else:
+#     print(scrape_comments(random_submission))
