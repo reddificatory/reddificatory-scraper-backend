@@ -1,21 +1,52 @@
-from database import cursor, db
+import sys
+sys.path.insert(0, 'D:\coding\python-reddit-tts\src')
+
 import random
+import db.submissions
+import db.database
 
-def store_submission(submission):    
-    cursor.execute(f"INSERT INTO submissions (submission_id) VALUES ('{submission.id}') ON CONFLICT DO NOTHING;")    
-    db.commit()
+def store_submission(subreddit, submission_id):    
+    db.database.cursor.execute(f"INSERT INTO submissions (submission_id, subreddit) VALUES ('{submission_id}', '{subreddit}') ON CONFLICT DO NOTHING;")    
+    db.database.db.commit()
 
-def update_submission(submission):
-    cursor.execute(f"UPDATE submissions SET used = TRUE, updated_at = (current_timestamp) WHERE submission_id = '{submission.id}'")
-    db.commit()
+def update_submission(submission_id, mode):
+    db.database.cursor.execute(f"UPDATE submissions SET {mode} = TRUE, updated_at = (current_timestamp) WHERE submission_id = '{submission_id}'")
+    db.database.db.commit()
 
-def get_unused_submissions():
-    cursor.execute(f"SELECT * FROM submissions WHERE used = FALSE;")
-    return cursor.fetchall()
+#TODO: finish this query and function
+def get_submissions(mode):
+    db.database.cursor.execute(f"SELECT * FROM submissions WHERE {mode} = FALSE;")
+    return db.database.cursor.fetchall()
 
-def get_random_submission():
-    submissions = get_unused_submissions()    
+def get_submissions_with_comments():
+    db.database.cursor.execute(f"SELECT * FROM submissions WHERE used = FALSE AND scraped = TRUE;")
+    return db.database.cursor.fetchall()
+
+def get_random_submission(mode):
+    submissions = get_submissions(mode)
+
+    if len(submissions) == 0:
+        return False
+
     stop = len(submissions) - 1
-    random_submission = submissions[random.randint(0, stop)]
-    return random_submission
+    random_submission = submissions[random.randint(0, stop)]    
+    return random_submission[0]
 
+def get_random_submission_with_comments():
+    submissions = get_submissions_with_comments()
+
+    if len(submissions) == 0:
+        return False
+
+    stop = len(submissions) - 1
+    random_submission = submissions[random.randint(0, stop)]    
+    return random_submission[0]
+
+def has_comments(submission_id):
+    db.database.cursor.execute(f"SELECT COUNT(*) FROM comments WHERE submission_id = '{submission_id}' HAVING COUNT(*) != 0;")
+    
+    try:
+        result = db.database.cursor.fetchone()[0]
+        return True
+    except:
+        return False
