@@ -5,8 +5,8 @@ import random
 import db.submissions
 import db.database
 
-def store_submission(submission_id):    
-    db.database.cursor.execute(f"INSERT INTO submissions (submission_id) VALUES ('{submission_id}') ON CONFLICT DO NOTHING;")    
+def store_submission(subreddit, submission_id):    
+    db.database.cursor.execute(f"INSERT INTO submissions (submission_id, subreddit) VALUES ('{submission_id}', '{subreddit}') ON CONFLICT DO NOTHING;")    
     db.database.db.commit()
 
 def update_submission(submission_id, mode):

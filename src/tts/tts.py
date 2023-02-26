@@ -8,30 +8,52 @@ import db.comments
 import scraper.comment_scraper
 import scraper.submission_scraper
 
-random_submission_id = db.submissions.get_random_submission_with_comments()
+def config_tts():
+    tts = pyttsx3.init()
+    tts.setProperty('rate', 160)
+    tts.setProperty('volume', 1)
+    return tts
 
-if not random_submission_id:
-    random_submission_id = db.submissions.get_random_submission('used')
+def tts_get_random_submission():
+    random_submission_id = db.submissions.get_random_submission_with_comments()
 
     if not random_submission_id:
-        print(scraper.submission_scraper.scrape_subreddit('askreddit'))
         random_submission_id = db.submissions.get_random_submission('used')
 
-    print(scraper.comment_scraper.scrape_comments(random_submission_id))
+        if not random_submission_id:
+            print(scraper.submission_scraper.scrape_subreddit('askreddit'))
+            random_submission_id = db.submissions.get_random_submission('used')
 
-tts = pyttsx3.init()
-tts.setProperty('rate', 160)
-tts.setProperty('volume', 1)
+        print(scraper.comment_scraper.scrape_comments(random_submission_id))
 
-comment_ids = db.comments.get_random_comments(random_submission_id, 3)
+    return random_submission_id
 
-for comment_id in comment_ids:
-    comment = config.REDDIT_CLIENT.comment(id = comment_id)
+def tts_submission_details(submission_id, tts):
+    submission = config.REDDIT_CLIENT.submission(submission_id)
+    title = submission.title
+    subreddit = f"r/{submission.subreddit.display_name}"
+    tts.say(subreddit)
+    tts.say(title)
 
-    print(comment.body)
-    tts.say(comment.body)
+def tts_comments(submission_id, tts):
+    comment_ids = db.comments.get_random_comments(submission_id, 3)
+
+    for comment_id in comment_ids:
+        comment = config.REDDIT_CLIENT.comment(id = comment_id)
+
+        print(comment.body)
+        #TODO save to file audio/{subreddit}/{submission_id}/{comment_id}.mp3
+        tts.say(comment.body)
+
+        db.comments.update_comment(comment_id)
+
+    db.submissions.update_submission(submission_id, 'used')
+
+def tts_run():
+    tts = config_tts()
+    random_submission_id = tts_get_random_submission()
+
+    tts_submission_details(random_submission_id, tts)
+    tts_comments(random_submission_id, tts)
+
     tts.runAndWait()
-
-    db.comments.update_comment(comment_id)
-
-db.submissions.update_submission(random_submission_id, 'used')

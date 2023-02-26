@@ -13,7 +13,7 @@ def scrape_subreddit(subreddit):
     for submission in subreddit.hot(limit = 50):
         if scraper.sentiment_analyzer.is_strong(submission.title):
             submissions.add(submission)
-            db.submissions.store_submission(submission.id)
+            db.submissions.store_submission(subreddit, submission.id)
 
     return submissions
 
