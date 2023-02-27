@@ -1,9 +1,4 @@
-import sys
-sys.path.insert(0, 'D:\coding\python-reddit-tts\src')
-
 import pysrt
-import config
-import tts.tts
 
 def process_text(text, max_line_length):
     lines = []
@@ -33,13 +28,15 @@ def get_durations(lines, rate):
         
         start_time = end_time
 
-def generate_subtitle(text, max_line_length):
-    for line in process_text(text, max_line_length):
-        print(line)
-    #process_text(text, max_line_length)
-    return 0
+    return durations
 
+def generate_subtitle(text, max_line_length, rate):
+    subtitle_file = pysrt.SubRipFile()
+    lines = process_text(text, max_line_length);
+    durations = get_durations(lines, rate)
 
-# generate_subtitle('buzi geci faszom kivan mar nem ertek semmit kezdem megkerdojelezni minden dontesem elegem van ebbol a szaros geci faszom mindenbol istenem konyorgom h segits meg engem', 40)
+    for i in range(len(lines)):
+        subtitle_file.append(pysrt.SubRipItem(index = i + 1, start = durations[i][0], end = durations[i][1], text = lines[i]))
 
-get_durations(process_text('buzi geci faszom kivan mar nem ertek semmit kezdem megkerdojelezni minden dontesem elegem van ebbol a szaros geci faszom mindenbol istenem konyorgom h segits meg engem', 40), 160)
+    subtitle_file.save('./output.srt')
+    return subtitle_file

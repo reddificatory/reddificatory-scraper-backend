@@ -2,11 +2,13 @@ import sys
 sys.path.insert(0, 'D:\coding\python-reddit-tts\src')
 
 import pyttsx3
+import os
 import config
 import db.submissions
 import db.comments
 import scraper.comment_scraper
 import scraper.submission_scraper
+import subtitle.subtitle_generator
 
 def config_tts():
     tts = pyttsx3.init()
@@ -33,25 +35,36 @@ def tts_get_random_submission():
 
     return random_submission_id
 
-def tts_submission_details(submission_id, tts):
+def tts_say(submission_id, tts):
     submission = config.REDDIT_CLIENT.submission(submission_id)
+    subreddit = submission.subreddit.display_name
+    r_subreddit = f'r/{subreddit}'
     title = submission.title
-    subreddit = f"r/{submission.subreddit.display_name}"
+    text = f'{r_subreddit} {title}'
 
-    print(subreddit)
-    tts.say(subreddit)
+    save_path = f'audio/{subreddit}'
+    if not os.path.exists(save_path):
+        os.mkdir(save_path)
+
+    print(r_subreddit)
+    tts.save_to_file(r_subreddit, f'{save_path}/subreddit.mp3')
+
+    save_path += f'/{submission_id}'
+    if not os.path.exists(save_path):
+        os.mkdir(save_path)
+
     print(title)
-    tts.say(title)
+    tts.save_to_file(title, f'{save_path}/title.mp3')
 
-def tts_comments(submission_id, tts):
     comment_ids = db.comments.get_random_comments(submission_id, 3)
 
     for comment_id in comment_ids:
         comment = config.REDDIT_CLIENT.comment(id = comment_id)
 
+        text += ' ' + comment.body
         print(comment.body)
-        #TODO save to file audio/{subreddit}/{submission_id}/{comment_id}.mp3
-        tts.say(comment.body)
+        
+        tts.save_to_file(comment.body, f'{save_path}/{comment_id}.mp3')
         db.comments.update_comment(comment_id)
 
     db.submissions.update_submission(submission_id, 'used')
@@ -60,7 +73,8 @@ def tts_run():
     tts = config_tts()
     random_submission_id = tts_get_random_submission()
 
-    tts_submission_details(random_submission_id, tts)
-    tts_comments(random_submission_id, tts)
+    tts_say(random_submission_id, tts)
 
     tts.runAndWait()
+
+tts_run()
