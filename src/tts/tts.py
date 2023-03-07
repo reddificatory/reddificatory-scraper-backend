@@ -35,46 +35,44 @@ def tts_get_random_submission():
 
     return random_submission_id
 
-def tts_say(submission_id, tts):
+def get_text(submission_id, comment_count):
     submission = config.REDDIT_CLIENT.submission(submission_id)
     subreddit = submission.subreddit.display_name
-    r_subreddit = f'r/{subreddit}'
     title = submission.title
-    text = f'{r_subreddit} {title}'
+    comment_ids = db.comments.get_unused_comments(submission_id)
+    text = f'r/{subreddit} {title}'
 
-    save_path = f'audio/{subreddit}'
-    if not os.path.exists(save_path):
-        os.mkdir(save_path)
+    try:
+        i = 0
+        while i < comment_count:
+            comment = config.REDDIT_CLIENT.comment(id = comment_ids[i])
+            text += ' ' + comment.body
+            db.comments.update_comment(comment_ids[i])
+            i += 1
 
-    print(r_subreddit)
-    tts.save_to_file(r_subreddit, f'{save_path}/subreddit.mp3')
-
-    save_path += f'/{submission_id}'
-    if not os.path.exists(save_path):
-        os.mkdir(save_path)
-
-    print(title)
-    tts.save_to_file(title, f'{save_path}/title.mp3')
-
-    comment_ids = db.comments.get_random_comments(submission_id, 3)
-
-    for comment_id in comment_ids:
-        comment = config.REDDIT_CLIENT.comment(id = comment_id)
-
-        text += ' ' + comment.body
-        print(comment.body)
-        
-        tts.save_to_file(comment.body, f'{save_path}/{comment_id}.mp3')
-        db.comments.update_comment(comment_id)
+    except:
+        True
 
     db.submissions.update_submission(submission_id, 'used')
+
+    return text.strip()
+
+def check_save_path(submission_id):
+    submission = config.REDDIT_CLIENT.submission(submission_id)
+    subreddit = submission.subreddit.display_name
+    save_path = f'videos/{subreddit}/{submission_id}'
+
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+    
+    return save_path
+
+def tts_say(submission_id, tts):
+    text = get_text(submission_id, 3)
+    tts.save_to_file(text, f'{check_save_path(submission_id)}/audio.mp3')
 
 def tts_run():
     tts = config_tts()
     random_submission_id = tts_get_random_submission()
-
     tts_say(random_submission_id, tts)
-
     tts.runAndWait()
-
-tts_run()

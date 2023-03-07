@@ -14,7 +14,7 @@ def scrape_comments(submission_id):
     for comment in submission.comments:
         if scraper.sentiment_analyzer.is_strong(comment.body):
             comments.add(comment)
-            db.comments.store_comment(comment.id, submission.id)
+            db.comments.store_comment(comment.id, submission.id, comment.body)
             db.submissions.update_submission(submission.id, 'scraped')
 
     return comments

@@ -30,7 +30,7 @@ def get_durations(lines, rate):
 
     return durations
 
-def generate_subtitle(text, max_line_length, rate):
+def generate_subtitle(text, max_line_length, rate, save_path):
     subtitle_file = pysrt.SubRipFile()
     lines = process_text(text, max_line_length);
     durations = get_durations(lines, rate)
@@ -38,5 +38,5 @@ def generate_subtitle(text, max_line_length, rate):
     for i in range(len(lines)):
         subtitle_file.append(pysrt.SubRipItem(index = i + 1, start = durations[i][0], end = durations[i][1], text = lines[i]))
 
-    subtitle_file.save('./output.srt')
+    subtitle_file.save(f'{save_path}/subtitle.srt')
     return subtitle_file
