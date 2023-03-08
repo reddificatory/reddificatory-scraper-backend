@@ -1,5 +1,5 @@
 import sys
-sys.path.insert(0, 'D:\coding\python-reddit-tts\src')
+sys.path.insert(0, 'D:\coding\Python\python-reddit-tts\src')
 
 import random
 import db.submissions
