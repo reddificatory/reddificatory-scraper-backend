@@ -1,6 +1,8 @@
-import psycopg2
+import os
 import sys
-sys.path.insert(0, 'D:\coding\Python\python-reddit-tts\src')
+sys.path.insert(0, os.getcwd() + '/src')
+
+import psycopg2
 import config
 
 db = psycopg2.connect(database = config.DB_NAME,

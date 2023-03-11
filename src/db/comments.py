@@ -1,26 +1,33 @@
+import os
 import sys
-sys.path.insert(0, 'D:\coding\Python\python-reddit-tts\src')
+sys.path.insert(0, os.getcwd() + '/src')
 
 import db.submissions
 import db.database
 import random
 import config
 
-def store_comment(comment_id, submission_id, comment_body):
-    db.database.cursor.execute(f"INSERT INTO comments (comment_id, submission_id, body) VALUES (%s, %s, %s) ON CONFLICT DO NOTHING;", (comment_id, submission_id, comment_body))
+def store_comment(comment_id, submission_id, comment_length):
+    db.database.cursor.execute(f"INSERT INTO comments (comment_id, submission_id, length) VALUES (%s, %s, %s) ON CONFLICT DO NOTHING;", (comment_id, submission_id, comment_length))
     db.database.db.commit()
 
 def update_comment(comment_id):
     db.database.cursor.execute(f"UPDATE comments SET used = TRUE, updated_at = (current_timestamp) WHERE comment_id = '{comment_id}';")
     db.database.db.commit()
 
-def get_unused_comments(submission_id):
+def get_unused_comments(submission_id, comment_count):
     db.database.cursor.execute(f"SELECT comments.comment_id FROM comments INNER JOIN submissions ON submissions.submission_id = comments.submission_id WHERE comments.submission_id IN (SELECT submission_id FROM comments GROUP BY submission_id HAVING COUNT(*) != 0) AND comments.submission_id = '{submission_id}';")
     comments = db.database.cursor.fetchall()
     comment_ids = []
 
-    for comment in comments:
-        comment_ids.append(comment[0])
+    try:
+        for i, comment in enumerate(comments):
+            if i == comment_count:
+                break
+
+            comment_ids.append(comment[0])
+    except:
+        True
 
     return comment_ids
 

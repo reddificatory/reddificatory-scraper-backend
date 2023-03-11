@@ -1,5 +1,6 @@
+import os
 import sys
-sys.path.insert(0, 'D:\coding\Python\python-reddit-tts\src')
+sys.path.insert(0, os.getcwd() + '/src')
 
 import config
 import db.comments
@@ -14,7 +15,7 @@ def scrape_comments(submission_id):
     for comment in submission.comments:
         if scraper.sentiment_analyzer.is_strong(comment.body):
             comments.add(comment)
-            db.comments.store_comment(comment.id, submission.id, comment.body)
+            db.comments.store_comment(comment.id, submission.id, len(comment.body))
             db.submissions.update_submission(submission.id, 'scraped')
 
     return comments

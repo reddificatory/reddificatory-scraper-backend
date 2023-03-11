@@ -1,5 +1,6 @@
+import os
 import sys
-sys.path.insert(0, 'D:\coding\Python\python-reddit-tts\src')
+sys.path.insert(0, os.getcwd() + '/src')
 
 import config
 import scraper.sentiment_analyzer
