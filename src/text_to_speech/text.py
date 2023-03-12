@@ -23,22 +23,6 @@ def get_random_submission(subreddit):
 
     return random_submission_id
 
-def process_text(text, max_line_length):
-    lines = []
-    line = ""
-
-    for word in text.split():
-        if len(line) + len(word) + 1 <= max_line_length:
-            line += f" {word}"
-        else:
-            lines.append(line.strip())            
-            line = word
-
-    if line:
-        lines.append(line.strip())
-
-    return lines
-
 def get_comments(submission_id, comment_count):
     comment_ids = db.comments.get_unused_comments(submission_id, comment_count)
     comments = []

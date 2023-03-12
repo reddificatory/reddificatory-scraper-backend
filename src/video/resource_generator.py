@@ -6,6 +6,7 @@ import text_to_speech.speech
 import text_to_speech.file
 import text_to_speech.text
 import text_to_speech.audio
+import image.image_generator
 
 max_line_length = 40
 wpm_rate = 155
@@ -18,3 +19,4 @@ tts_engine = text_to_speech.speech.config_engine(wpm_rate)
 durations = text_to_speech.audio.get_durations(save_path)
 
 text_to_speech.speech.save(random_submission_id, tts_engine, comments)
+image.image_generator.generate_pictures(random_submission_id, comments, save_path)
