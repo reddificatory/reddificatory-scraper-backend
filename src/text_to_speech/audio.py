@@ -19,5 +19,3 @@ def get_durations(save_path):
         durations.append(librosa.get_duration(path=audio_path))
 
     return durations
-
-print(get_durations('media\\AskReddit\\11no8js'))

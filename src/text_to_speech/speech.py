@@ -1,11 +1,10 @@
 import os
 import sys
 sys.path.insert(0, os.getcwd() + '/src')
-
 import pyttsx3
-import os
 import text_to_speech.file
 import text_to_speech.text
+import config
 
 def config_engine(rate):
     tts = pyttsx3.init()
@@ -35,28 +34,24 @@ def get_audio_name(lines, index):
 
     return audio_name
 
-def save(submission_id, tts, lines):
+def save(submission_id, tts, comments):
+    submission = config.REDDIT_CLIENT.submission(submission_id)
+    title = submission.title
     save_path = text_to_speech.file.get_save_path(submission_id)
     audio_list_file = open(os.path.join(save_path, 'audios.txt'), 'w', encoding='UTF-8')
 
-    # lines = texts[0]
-    # text = texts[1]
     print('Saving text-to-speech line-by-line output...')
 
-    # max_index_length = len(str(len(lines)))
+    i = 0
+    tts.save_to_file(title, f'{save_path}\\{get_audio_name(comments, i)}')
 
-    for i, line in enumerate(lines):
-        audio_file_name = get_audio_name(lines, i)
-        tts.save_to_file(line, f'{save_path}\\{audio_file_name}')
+    for comment in comments:
+        i += 1
+        audio_file_name = get_audio_name(comments, i)
+        tts.save_to_file(comment.body, f'{save_path}\\{audio_file_name}')
         audio_list_file.write(f'file {audio_file_name}\n')
 
-    print(f'Saved text-to-speech line-by-line output to {save_path}\\audio*.wav ({len(lines)} files saved)')
-
-    # print('Saving full text-to-speech output...')
-    # tts.save_to_file(text, f'{save_path}\\audio.wav')
-    # print(f'Saved text-to-speech output to {save_path}\\audio.wav')
+    print(f'Saved text-to-speech line-by-line output to {save_path}\\audio*.wav ({len(comments) + 1} files saved)')
 
     tts.runAndWait()
     audio_list_file.close()
-
-    # return lines

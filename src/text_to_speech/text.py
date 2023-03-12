@@ -39,22 +39,18 @@ def process_text(text, max_line_length):
 
     return lines
 
-def get_lines(submission_id, comment_count):
-    submission = config.REDDIT_CLIENT.submission(submission_id)
-    subreddit = submission.subreddit.display_name
-    title = submission.title
+def get_comments(submission_id, comment_count):
     comment_ids = db.comments.get_unused_comments(submission_id, comment_count)
-    lines = []
-    lines.append(f'r/{subreddit}: {title}')
+    comments = []
 
     try:
         for comment_id in comment_ids:
-            comment = config.REDDIT_CLIENT.comment(id = comment_id)
-            lines.append(comment.body)
+            comment = config.REDDIT_CLIENT.comment(id=comment_id)
+            comments.append(comment)
             db.comments.update_comment(comment_id)
     except:
         True
 
     db.submissions.update_submission(submission_id, 'used')
 
-    return lines
+    return comments
