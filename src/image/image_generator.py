@@ -104,15 +104,20 @@ def generate_submission_picture():
     True
 
 def generate_pictures(submission_id, comments, save_path):
+    image_list_file = open(os.path.join(save_path, 'images.txt'), 'w', encoding='UTF-8')
     i = 1
-    generate_submission_picture()
-    i += 1
+    # TODO
+    # generate_submission_picture()
+    # i += 1
 
     for comment in comments:
         index = text_to_speech.file.get_file_name(comments, i, 'image', '.png')[1]
         file_name = text_to_speech.file.get_file_name(comments, i, 'image', '.png')[0]
         generate_comment_picture(comment, save_path, file_name, index)
+        image_list_file.write(f'file {file_name}\n')
         i += 1
+
+    image_list_file.close()
 
 # comment = config.REDDIT_CLIENT.comment(id='jbwucnw')
 # save_path = 'media\\AskReddit\\11p9o5i'
