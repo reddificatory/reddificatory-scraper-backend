@@ -2,11 +2,22 @@ import os
 import sys
 sys.path.insert(0, os.getcwd() + '/src')
 
+import librosa
 import glob
 
-def get_audio_file_names(save_path):
-    path = os.path.join(os.getcwd(), save_path)
+def merge_audios(save_path):
+    media_path = os.path.join(os.getcwd(), save_path)
+    os.chdir(media_path)
+    os.system('ffmpeg -f concat -i audios.txt full.wav')    
 
-    print(path)
+def get_durations(save_path):
+    media_path = os.path.join(os.getcwd(), save_path)
+    audio_paths = glob.glob(os.path.join(media_path, 'audio*.wav'))
+    durations = []
 
-get_audio_file_names('asd')
+    for audio_path in audio_paths:
+        durations.append(librosa.get_duration(path=audio_path))
+
+    return durations
+
+print(get_durations('media\\AskReddit\\11no8js'))
