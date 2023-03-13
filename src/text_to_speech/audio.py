@@ -8,7 +8,7 @@ import glob
 def merge_audios(save_path):
     media_path = os.path.join(os.getcwd(), save_path)
     os.chdir(media_path)
-    os.system('ffmpeg -f concat -i audios.txt full.wav')    
+    os.system('ffmpeg -f concat -i audios.txt merged.wav')
 
 def get_durations(save_path):
     media_path = os.path.join(os.getcwd(), save_path)
