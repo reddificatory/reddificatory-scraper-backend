@@ -3,7 +3,7 @@ from PIL import Image, ImageFont
 def process_text(text, width, font, margin, icon=Image.new('RGB', (0, 0))):
     processed_text = ''
     line = ''
-    max_width = width - (3 * margin) - icon.width
+    max_width = width - (4 * margin) - icon.size[0]
     text = text.replace('\n\n', '\n').strip()
     words = text.split(' ')
 

@@ -17,7 +17,7 @@ def get_profile_pic(author, save_path, index):
     if not os.path.exists(path):
         urllib.request.urlretrieve(author.icon_img, path)
         icon_image = Image.open(path)
-        icon_image.thumbnail((30, 30))
+        icon_image.thumbnail((50, 50))
         icon_image.save(path)
 
     return Image.open(path)
@@ -28,7 +28,7 @@ def get_mask(image, save_path):
     # if not os.path.exists:
     mask_image = Image.new('L', image.size, 0)
     draw = ImageDraw.Draw(mask_image)
-    draw.ellipse((0, 0, 29, 29 ), 255)
+    draw.ellipse((0, 0, image.size[0] - 1, image.size[1] - 1), 255)
     mask_image = mask_image.filter(ImageFilter.GaussianBlur(0.6))
     mask_image.save(path)
 
@@ -41,9 +41,9 @@ def generate_comment_image(comment, save_path, file_name, index):
     body = comment.body
     score = comment.score
     
-    header_font = ImageFont.truetype('C:\\Windows\\fonts\\Verdana.ttf', 11)
-    body_font = ImageFont.truetype('C:\\Windows\\fonts\\Verdana.ttf', 13)
-    width = 700
+    header_font = ImageFont.truetype('C:\\Windows\\fonts\\Verdana.ttf', 26)
+    body_font = ImageFont.truetype('C:\\Windows\\fonts\\Verdana.ttf', 28)
+    width = 950
     margin = 8
     score_height = 20
     # TODO: figure out offset instead of a magic constant
@@ -84,9 +84,9 @@ def generate_submission_image(submission_id, save_path, file_name):
     title = submission.title
     score = submission.score
 
-    header_font = ImageFont.truetype('C:\\Windows\\fonts\\Verdana.ttf', 11)
-    title_font = ImageFont.truetype('C:\\Windows\\fonts\\Verdana.ttf', 16)
-    width = 700
+    header_font = ImageFont.truetype('C:\\Windows\\fonts\\Verdana.ttf', 26)
+    title_font = ImageFont.truetype('C:\\Windows\\fonts\\Verdana.ttf', 31)
+    width = 950
     margin = 8
     text_offset = 36
     header = f'@askredditts.x • r/{submission.subreddit.display_name} • Follow for more content!'
@@ -143,6 +143,7 @@ def merge_images(save_path):
     media_path = os.path.join(os.getcwd(), save_path)
     # media_path = os.path.join(save_path)
     # os.chdir(media_path)
+    # os.system('ffmpeg -f concat -i images.txt merged.mp4')
     os.system('ffmpeg -f concat -i images.txt merged.mp4')
 
 def max_image_height(save_path):
@@ -161,7 +162,7 @@ def get_image_files(save_path):
     return glob.glob(os.path.join(save_path, 'image*.png'))
 
 def resize_image(file_name, height):
-    width = 700
+    width = 950
     image = Image.open(file_name)
     blank_image = Image.new('RGBA', (width, height), (0, 0, 0, 0))
     y = int(round((height - image.size[1]) / 2, 0))

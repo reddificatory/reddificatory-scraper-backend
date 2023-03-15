@@ -7,7 +7,7 @@ import config
 def get_save_path(submission_id):
     submission = config.REDDIT_CLIENT.submission(submission_id)
     subreddit = submission.subreddit.display_name
-    save_path = f'media\\{subreddit}\\{submission_id}'
+    save_path = f'media\\reddit\\{subreddit}\\{submission_id}'
 
     if not os.path.exists(save_path):
         os.makedirs(save_path)

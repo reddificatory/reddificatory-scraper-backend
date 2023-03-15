@@ -14,7 +14,7 @@ comment_count = 3
 random_submission_id = text_to_speech.text.get_random_submission('askreddit')
 # random_submission_id = '11okj6g'
 save_path = text_to_speech.file.get_save_path(random_submission_id)
-comments = text_to_speech.text.get_comments(random_submission_id, 4)
+comments = text_to_speech.text.get_comments(random_submission_id, 2)
 tts_engine = text_to_speech.speech.config_engine(wpm_rate)
 durations = text_to_speech.audio.get_durations(save_path)
 
