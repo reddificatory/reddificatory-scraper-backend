@@ -34,6 +34,7 @@ def get_mask(image, save_path):
 
     return Image.open(path)
 
+# TODO: get rid of empty lines
 def generate_comment_image(comment, save_path, file_name, index):
     author = comment.author
     icon = get_profile_pic(author, save_path, index)
@@ -138,9 +139,9 @@ def generate_images(submission_id, comments, save_path):
     print('Images resized')
 
 
-def merge_images(save_path):
+def merge_images():
     # print(os.getcwd())
-    media_path = os.path.join(os.getcwd(), save_path)
+    # media_path = os.path.join(os.getcwd(), save_path)
     # media_path = os.path.join(save_path)
     # os.chdir(media_path)
     # os.system('ffmpeg -f concat -i images.txt merged.mp4')
