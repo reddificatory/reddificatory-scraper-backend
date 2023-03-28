@@ -15,6 +15,7 @@ def get_profile_pic(author, save_path, index):
     path = os.path.join(save_path, file_name)
 
     if not os.path.exists(path):
+        # TODO: Exception has occurred: AttributeError 'Redditor' object has no attribute 'icon_img'
         urllib.request.urlretrieve(author.icon_img, path)
         icon_image = Image.open(path)
         icon_image.thumbnail((50, 50))

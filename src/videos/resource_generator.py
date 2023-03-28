@@ -18,7 +18,7 @@ save_path = text_to_speech.file.get_save_path(random_submission_id)
 video_file_name = 'merged.mp4'
 comments = text_to_speech.text.get_comments(random_submission_id, 2)
 tts_engine = text_to_speech.speech.config_engine(wpm_rate)
-durations = text_to_speech.audio.get_durations(save_path)
+#durations = text_to_speech.audio.get_durations(save_path)
 
 #get_gameplay_section(save_path)
 
@@ -26,5 +26,8 @@ text_to_speech.speech.save(random_submission_id, tts_engine, comments)
 images.image_generator.generate_images(random_submission_id, comments, save_path)
 text_to_speech.audio.merge_audios(save_path)
 images.image_generator.merge_images()
-print(videos.video.get_video_duration(video_file_name))
-# get_gameplay_section(save_path)
+
+gameplay_durations = videos.video.get_gameplay_duration()
+#print(videos.video.get_video_duration(video_file_name))
+videos.video.get_gameplay_section(videos.video.get_random_gameplay(), gameplay_durations[0], gameplay_durations[1])
+videos.video.get_merged_video()
