@@ -5,7 +5,7 @@ sys.path.insert(0, os.getcwd() + '/src')
 import config
 import database.comments
 import database.submissions
-import scraper.sentiment_analyzer
+import text_processor
 
 def scrape_comments(submission_id):
     submission = config.REDDIT_CLIENT.submission(submission_id)
