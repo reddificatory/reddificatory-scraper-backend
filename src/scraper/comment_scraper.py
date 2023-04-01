@@ -3,8 +3,8 @@ import sys
 sys.path.insert(0, os.getcwd() + '/src')
 
 import config
-import db.comments
-import db.submissions
+import database.comments
+import database.submissions
 import scraper.sentiment_analyzer
 
 def scrape_comments(submission_id):
@@ -15,8 +15,8 @@ def scrape_comments(submission_id):
     for comment in submission.comments:
         # if scraper.sentiment_analyzer.is_strong(comment.body):
         comments.add(comment)
-        db.comments.store_comment(comment.id, submission.id, len(comment.body))
-        db.submissions.update_submission(submission.id, 'scraped')
+        database.comments.store_comment(comment.id, submission.id, len(comment.body))
+        database.submissions.update_submission(submission.id, 'scraped')
 
     return comments
 

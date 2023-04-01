@@ -4,7 +4,7 @@ sys.path.insert(0, os.getcwd() + '/src')
 
 import config
 import scraper.sentiment_analyzer
-import db.submissions
+import database.submissions
 
 def scrape_subreddit(subreddit):
     client = config.REDDIT_CLIENT
@@ -14,7 +14,7 @@ def scrape_subreddit(subreddit):
     for submission in subreddit.hot(limit = 50):
         if scraper.sentiment_analyzer.is_strong(submission.title):
             submissions.add(submission)
-            db.submissions.store_submission(subreddit, submission.id)
+            database.submissions.store_submission(subreddit, submission.id)
 
     return submissions
 

@@ -3,25 +3,25 @@ import sys
 sys.path.insert(0, os.getcwd() + '/src')
 
 import random
-import db.submissions
-import db.database
+import database.submissions
+import database.database
 
 def store_submission(subreddit, submission_id):    
-    db.database.cursor.execute(f"INSERT INTO submissions (submission_id, subreddit) VALUES ('{submission_id}', '{subreddit}') ON CONFLICT DO NOTHING;")    
-    db.database.db.commit()
+    database.database.cursor.execute(f"INSERT INTO submissions (submission_id, subreddit) VALUES ('{submission_id}', '{subreddit}') ON CONFLICT DO NOTHING;")    
+    database.database.database.commit()
 
 def update_submission(submission_id, mode):
-    db.database.cursor.execute(f"UPDATE submissions SET {mode} = TRUE, updated_at = (current_timestamp) WHERE submission_id = '{submission_id}'")
-    db.database.db.commit()
+    database.database.cursor.execute(f"UPDATE submissions SET {mode} = TRUE, updated_at = (current_timestamp) WHERE submission_id = '{submission_id}'")
+    database.database.database.commit()
 
 #TODO: finish this query and function
 def get_submissions(mode):
-    db.database.cursor.execute(f"SELECT * FROM submissions WHERE {mode} = FALSE;")
-    return db.database.cursor.fetchall()
+    database.database.cursor.execute(f"SELECT * FROM submissions WHERE {mode} = FALSE;")
+    return database.database.cursor.fetchall()
 
 def get_submissions_with_comments():
-    db.database.cursor.execute(f"SELECT * FROM submissions WHERE used = FALSE AND scraped = TRUE;")
-    return db.database.cursor.fetchall()
+    database.database.cursor.execute(f"SELECT * FROM submissions WHERE used = FALSE AND scraped = TRUE;")
+    return database.database.cursor.fetchall()
 
 def get_random_submission(mode):
     submissions = get_submissions(mode)

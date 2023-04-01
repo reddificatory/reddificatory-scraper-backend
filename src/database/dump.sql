@@ -1,6 +1,7 @@
 CREATE TABLE IF NOT EXISTS submissions (
     "submission_id" VARCHAR ( 16 ) UNIQUE NOT NULL PRIMARY KEY,
     "subreddit" TEXT NOT NULL,
+    "strong" BOOLEAN NOT NULL,
     "scraped" BOOLEAN DEFAULT FALSE,
     "used" BOOLEAN DEFAULT FALSE,
     "created_at" TIMESTAMP NOT NULL DEFAULT (current_timestamp),
@@ -11,6 +12,7 @@ CREATE TABLE IF NOT EXISTS comments (
     "comment_id" VARCHAR ( 16 ) UNIQUE NOT NULL PRIMARY KEY,
     "submission_id" VARCHAR ( 16 ) NOT NULL,
     "length" INTEGER NOT NULL,
+    "strong" BOOLEAN NOT NULL,
     "used" BOOLEAN DEFAULT FALSE,
     "created_at" TIMESTAMP NOT NULL DEFAULT (current_timestamp),
     "updated_at" TIMESTAMP NOT NULL DEFAULT (current_timestamp),

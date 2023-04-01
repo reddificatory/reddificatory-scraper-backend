@@ -5,8 +5,8 @@ import text_to_speech.speech
 import text_to_speech.file
 import text_to_speech.text
 import text_to_speech.audio
-import images.image_generator
-import videos.video
+import image_generator.image_generator
+import video_generator.video
 
 max_line_length = 40
 wpm_rate = 155
@@ -22,11 +22,11 @@ tts_engine = text_to_speech.speech.config_engine(wpm_rate)
 #get_gameplay_section(save_path)
 
 text_to_speech.speech.save(random_submission_id, tts_engine, comments)
-images.image_generator.generate_images(random_submission_id, comments, save_path)
+image_generator.image_generator.generate_images(random_submission_id, comments, save_path)
 text_to_speech.audio.merge_audios(save_path)
-images.image_generator.merge_images()
+image_generator.image_generator.merge_images()
 
-gameplay_durations = videos.video.get_gameplay_duration()
+gameplay_durations = video_generator.video.get_gameplay_duration()
 #print(videos.video.get_video_duration(video_file_name))
-videos.video.get_gameplay_section(videos.video.get_random_gameplay(), gameplay_durations[0], gameplay_durations[1])
-videos.video.get_merged_video()
+video_generator.video.get_gameplay_section(video_generator.video.get_random_gameplay(), gameplay_durations[0], gameplay_durations[1])
+video_generator.video.get_merged_video()

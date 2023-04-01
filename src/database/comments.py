@@ -2,22 +2,22 @@ import os
 import sys
 sys.path.insert(0, os.getcwd() + '/src')
 
-import db.submissions
-import db.database
+import database.submissions
+import database.database
 import random
 import config
 
 def store_comment(comment_id, submission_id, comment_length):
-    db.database.cursor.execute(f"INSERT INTO comments (comment_id, submission_id, length) VALUES (%s, %s, %s) ON CONFLICT DO NOTHING;", (comment_id, submission_id, comment_length))
-    db.database.db.commit()
+    database.database.cursor.execute(f"INSERT INTO comments (comment_id, submission_id, length) VALUES (%s, %s, %s) ON CONFLICT DO NOTHING;", (comment_id, submission_id, comment_length))
+    database.database.database.commit()
 
 def update_comment(comment_id):
-    db.database.cursor.execute(f"UPDATE comments SET used = TRUE, updated_at = (current_timestamp) WHERE comment_id = '{comment_id}';")
-    db.database.db.commit()
+    database.database.cursor.execute(f"UPDATE comments SET used = TRUE, updated_at = (current_timestamp) WHERE comment_id = '{comment_id}';")
+    database.database.database.commit()
 
 def get_unused_comments(submission_id, comment_count):
-    db.database.cursor.execute(f"SELECT comments.comment_id FROM comments INNER JOIN submissions ON submissions.submission_id = comments.submission_id WHERE comments.submission_id IN (SELECT submission_id FROM comments GROUP BY submission_id HAVING COUNT(*) != 0) AND comments.submission_id = '{submission_id}';")
-    comments = db.database.cursor.fetchall()
+    database.database.cursor.execute(f"SELECT comments.comment_id FROM comments INNER JOIN submissions ON submissions.submission_id = comments.submission_id WHERE comments.submission_id IN (SELECT submission_id FROM comments GROUP BY submission_id HAVING COUNT(*) != 0) AND comments.submission_id = '{submission_id}';")
+    comments = database.database.cursor.fetchall()
     comment_ids = []
 
     try:
@@ -43,6 +43,6 @@ def get_random_comments(submission_id, count):
     for i in range(count):
         random_comment_ids.add(get_random_comment(submission_id))
     
-    db.submissions.update_submission(submission_id, 'used')
+    database.submissions.update_submission(submission_id, 'used')
 
     return random_comment_ids

@@ -6,7 +6,7 @@ import urllib.request
 import text_to_speech.file
 import text_to_speech.audio
 import config
-import images.text
+import image_generator.text
 import librosa
 import glob
 
@@ -50,8 +50,8 @@ def generate_comment_image(comment, save_path, file_name, index):
     score_height = 20
     # TODO: figure out offset instead of a magic constant
     text_offset = 36
-    text = images.text.process_text(body, width, body_font, margin, icon)
-    text_height = images.text.get_text_height(text, body_font)
+    text = image_generator.text.process_text(body, width, body_font, margin, icon)
+    text_height = image_generator.text.get_text_height(text, body_font)
     height = text_height + text_offset + icon.height + margin
     # height = text_height + text_offset + score_height + icon.height + margin
 
@@ -92,9 +92,9 @@ def generate_submission_image(submission_id, save_path, file_name):
     margin = 8
     text_offset = 36
     header = f'@askredditts.x • r/{submission.subreddit.display_name} • Follow for more content!'
-    header_height = images.text.get_text_height(header, header_font)
-    text = images.text.process_text(title, width, title_font, margin)
-    text_height = images.text.get_text_height(text, title_font)
+    header_height = image_generator.text.get_text_height(header, header_font)
+    text = image_generator.text.process_text(title, width, title_font, margin)
+    text_height = image_generator.text.get_text_height(text, title_font)
     height = 3 * margin + header_height + text_height + text_offset
 
     image = Image.new(mode='RGB', size=(width, height), color=ImageColor.getrgb('#1A1A1B'))
