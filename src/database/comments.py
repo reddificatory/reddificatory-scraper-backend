@@ -8,7 +8,7 @@ import random
 import config
 
 def store_comment(comment_id, submission_id, comment_length, strong):
-    database.connection.cursor.execute(f"INSERT INTO comments (comment_id, submission_id, length, strong) VALUES (%s, %s, %s) ON CONFLICT DO NOTHING;", (comment_id, submission_id, comment_length, strong))
+    database.connection.cursor.execute(f"INSERT INTO comments (comment_id, submission_id, length, strong) VALUES (%s, %s, %s, %s) ON CONFLICT DO NOTHING;", (comment_id, submission_id, comment_length, strong))
     database.connection.database.commit()
 
 def update_comment(comment_id):

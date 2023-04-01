@@ -26,5 +26,3 @@ def run(texts, save_path, engine):
     engine.runAndWait()
     audio_list_file.close()
     print(f'TTS output saved to {save_path}')
-
-run(['asd', 'asd', 'asd', 'asd', 'asd', 'asd', 'asd', 'asd', 'asd', 'asd', 'asd', 'asd', 'asd', 'asd', 'asd'], file.get_save_path(os.path.join('media', 'reddit'), "123ohqw"), config_engine(150))

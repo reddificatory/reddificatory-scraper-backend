@@ -23,10 +23,11 @@ def get_submissions_with_comments():
     database.connection.cursor.execute(f"SELECT * FROM submissions WHERE used = FALSE AND scraped = TRUE;")
     return database.connection.cursor.fetchall()
 
-def get_random_submission(mode):
-    submissions = get_submissions(mode)
+def get_random_submission():
+    submissions = get_submissions_with_comments()
 
     if len(submissions) == 0:
+        print('No scraped submissions in database. Please run the scraper.')
         return False
 
     stop = len(submissions) - 1

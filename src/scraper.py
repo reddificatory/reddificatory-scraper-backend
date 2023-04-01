@@ -21,10 +21,16 @@ def get_comments(submission_id):
     submission = config.REDDIT_CLIENT.submission(submission_id)
     comments = set()
 
-    submission.comments.replace_more(limit=20)
+    submission.comments.replace_more()
     for comment in submission.comments:
         comments.add(comment)
         database.comments.store_comment(comment.id, submission.id, len(comment.body), text_processor.is_strong(comment.body))
         database.submissions.update_submission(submission.id, 'scraped')
 
     return comments
+
+def scrape(subreddit):
+    submissions = get_submissions(subreddit)
+
+    for submission in submissions:
+        get_comments(submission.id)
