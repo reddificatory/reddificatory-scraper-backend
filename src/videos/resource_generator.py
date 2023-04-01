@@ -1,7 +1,6 @@
 import os
 import sys
 sys.path.insert(0, os.getcwd() + '/src')
-
 import text_to_speech.speech
 import text_to_speech.file
 import text_to_speech.text
