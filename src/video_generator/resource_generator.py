@@ -2,9 +2,9 @@ import os
 import sys
 sys.path.insert(0, os.getcwd() + '/src')
 import text_to_speech.speech
-import text_to_speech.file
+import file
 import text_to_speech.text
-import text_to_speech.audio
+import audio
 import image_generator.image_generator
 import video_generator.video
 
@@ -13,7 +13,7 @@ wpm_rate = 155
 comment_count = 3
 random_submission_id = text_to_speech.text.get_random_submission('askreddit')
 # random_submission_id = '11okj6g'
-save_path = text_to_speech.file.get_save_path(random_submission_id)
+save_path = file.get_save_path(random_submission_id)
 video_file_name = 'merged.mp4'
 comments = text_to_speech.text.get_comments(random_submission_id, 2)
 tts_engine = text_to_speech.speech.config_engine(wpm_rate)
@@ -23,7 +23,7 @@ tts_engine = text_to_speech.speech.config_engine(wpm_rate)
 
 text_to_speech.speech.save(random_submission_id, tts_engine, comments)
 image_generator.image_generator.generate_images(random_submission_id, comments, save_path)
-text_to_speech.audio.merge_audios(save_path)
+audio.merge_audios(save_path)
 image_generator.image_generator.merge_images()
 
 gameplay_durations = video_generator.video.get_gameplay_duration()

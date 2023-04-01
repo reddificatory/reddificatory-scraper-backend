@@ -3,8 +3,8 @@ import sys
 sys.path.insert(0, os.getcwd() + '/src')
 from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageColor
 import urllib.request
-import text_to_speech.file
-import text_to_speech.audio
+import file
+import audio
 import config
 import image_generator.text
 import librosa
@@ -107,8 +107,8 @@ def generate_submission_image(submission_id, save_path, file_name):
 
 def generate_images(submission_id, comments, save_path):
     image_list_file = open(os.path.join(save_path, 'images.txt'), 'w', encoding='UTF-8')
-    image_file_name = text_to_speech.file.get_file_name(comments, 0, 'image', '.png')[0]
-    audio_file_name = text_to_speech.file.get_file_name(comments, 0, 'audio', '.wav')[0]
+    image_file_name = file.get_file_name(comments, 0, 'image', '.png')[0]
+    audio_file_name = file.get_file_name(comments, 0, 'audio', '.wav')[0]
 
     print('Generating submission image...')
     generate_submission_image(submission_id, save_path, image_file_name)
@@ -119,9 +119,9 @@ def generate_images(submission_id, comments, save_path):
     print('Generating comment images...')
     i = 1
     for comment in comments:
-        index = text_to_speech.file.get_file_name(comments, i, 'image', '.png')[1]
-        image_file_name = text_to_speech.file.get_file_name(comments, i, 'image', '.png')[0]
-        audio_file_name = text_to_speech.file.get_file_name(comments, i, 'audio', '.wav')[0]
+        index = file.get_file_name(comments, i, 'image', '.png')[1]
+        image_file_name = file.get_file_name(comments, i, 'image', '.png')[0]
+        audio_file_name = file.get_file_name(comments, i, 'audio', '.wav')[0]
         generate_comment_image(comment, save_path, image_file_name, index)
         image_list_file.write(f'file {image_file_name}\n')
         image_list_file.write(f'outpoint {librosa.get_duration(path=os.path.join(save_path, audio_file_name))}\n')
