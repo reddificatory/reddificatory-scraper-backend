@@ -5,6 +5,7 @@ sys.path.insert(0, os.getcwd() + '/src')
 import random
 import database.submissions
 import database.connection
+import logger
 
 def store_submission(subreddit, submission_id, strong):    
     database.connection.cursor.execute(f"INSERT INTO submissions (submission_id, subreddit, strong) VALUES ('{submission_id}', '{subreddit}', '{strong}') ON CONFLICT DO NOTHING;")
@@ -27,7 +28,7 @@ def get_random_submission():
     submissions = get_submissions_with_comments()
 
     if len(submissions) == 0:
-        print('No scraped submissions in database. Please run the scraper.')
+        logger.logger.error('No scraped submissions in database. Please run the scraper.')
         return False
 
     stop = len(submissions) - 1

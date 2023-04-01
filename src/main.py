@@ -8,7 +8,7 @@ import database.submissions
 import database.comments
 
 subreddit = 'askreddit'
-scraper.scrape(subreddit)
+#scraper.scrape(subreddit)
 
 submission_id = database.submissions.get_random_submission()
 
