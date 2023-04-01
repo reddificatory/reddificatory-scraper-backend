@@ -30,7 +30,11 @@ def get_comments(submission_id):
     return comments
 
 def scrape(subreddit):
+    print(f'Getting submissions from {subreddit}...')
     submissions = get_submissions(subreddit)
 
     for submission in submissions:
+        print(f'Getting comments from {submission.id}...')
         get_comments(submission.id)
+
+    print("Scraping done.")
