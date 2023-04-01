@@ -1,5 +1,6 @@
+import os
 import sys
-sys.path.insert(0, 'D:\coding\python-reddit-tts\src')
+sys.path.insert(0, os.getcwd() + '/src')
 
 import random
 import db.submissions
@@ -41,12 +42,3 @@ def get_random_submission_with_comments():
     stop = len(submissions) - 1
     random_submission = submissions[random.randint(0, stop)]    
     return random_submission[0]
-
-def has_comments(submission_id):
-    db.database.cursor.execute(f"SELECT COUNT(*) FROM comments WHERE submission_id = '{submission_id}' HAVING COUNT(*) != 0;")
-    
-    try:
-        result = db.database.cursor.fetchone()[0]
-        return True
-    except:
-        return False
