@@ -2,7 +2,6 @@ import os
 import sys
 sys.path.insert(0, os.getcwd() + '/src')
 import pyttsx3
-import config
 import file
 import logger
 

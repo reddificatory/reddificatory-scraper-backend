@@ -20,12 +20,12 @@ def get_submissions(mode):
     database.connection.cursor.execute(f"SELECT * FROM submissions WHERE {mode} = FALSE;")
     return database.connection.cursor.fetchall()
 
-def get_submissions_with_comments():
-    database.connection.cursor.execute(f"SELECT * FROM submissions WHERE used = FALSE AND scraped = TRUE;")
+def get_submissions_with_comments(subreddit):
+    database.connection.cursor.execute(f"SELECT * FROM submissions WHERE used = FALSE AND scraped = TRUE AND subreddit = {subreddit};")
     return database.connection.cursor.fetchall()
 
-def get_random_submission():
-    submissions = get_submissions_with_comments()
+def get_random_submission(subreddit):
+    submissions = get_submissions_with_comments(subreddit)
 
     if len(submissions) == 0:
         logger.logger.error('No scraped submissions in database. Please run the scraper.')

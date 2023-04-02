@@ -59,9 +59,6 @@ subreddit_submission_group.add_argument('-u', '--submission', dest='submission',
 argument_parser.add_argument('-S', '--strong', dest='strong', action='store_true', help='Scrape stuff with strong sentiments only')
 arguments = argument_parser.parse_args()
 
-# submission_strong_group = argument_parser.add_mutually_exclusive_group(required=True)
-# submission_strong_group.add_argument('-u', '--submission', dest='submission', help='Submission to scrape')
-
 def main():
     if arguments.submission and arguments.strong:
         argument_parser.error('The -S/--strong is not valid with the -u/--submission option')
@@ -75,5 +72,5 @@ def main():
     if arguments.subreddit:
         scrape(arguments.subreddit, arguments.strong)
     
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
