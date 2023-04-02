@@ -31,9 +31,9 @@ def get_unused_comments(submission_id, comment_count):
 
     return comment_ids
 
-def get_random_comment(submission_id):
+def get_random_comment(submission_id, count):
     submission = config.REDDIT_CLIENT.submission(submission_id)
-    comment_ids = get_unused_comments(submission_id)
+    comment_ids = get_unused_comments(submission_id, count)
     stop = len(comment_ids) - 1
     random_comment_id = comment_ids[random.randint(0, stop)]
     return random_comment_id
@@ -41,7 +41,7 @@ def get_random_comment(submission_id):
 def get_random_comments(submission_id, count):
     random_comment_ids = set()
     for i in range(count):
-        random_comment_ids.add(get_random_comment(submission_id))
+        random_comment_ids.add(get_random_comment(submission_id, count))
     
     database.submissions.update_submission(submission_id, 'used')
 

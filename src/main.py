@@ -30,7 +30,7 @@ def main():
     subreddit = submission.subreddit
     save_path = file.get_save_path(os.path.join('media', 'reddit'), submission_id)
     comment_length = arguments.length
-    comment_count = arguments.comments
+    comment_count = int(arguments.comments)
     texts = []
 
     if arguments.title:
@@ -39,7 +39,17 @@ def main():
     if arguments.body:
         texts.append(submission.body)
 
-    # TODO: rewrite text processor to process texts list
+    # TODO: implement getting every comment
+    # TODO: implement comment length
+    # TODO: implement bot comment filtering
+    # TODO: rewrite database queries to suite the new options
+    if comment_count != 0 or comment_count != -1:
+        comment_ids = database.comments.get_random_comments(submission_id, comment_count)
+        for comment_id in comment_ids:
+            comment = config.REDDIT_CLIENT.comment(comment_id)
+            texts.append(text_processor.remove_duplicate_newlines(comment.body))
+
+    print(arguments, texts)
 
 if __name__ == '__main__':
     main()
