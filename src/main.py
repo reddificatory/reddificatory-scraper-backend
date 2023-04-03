@@ -1,13 +1,12 @@
 import os
 import config
-# import scraper
 import file
 import text_processor
 import text_to_speech
 import database.submissions
 import database.comments
-import logger
 import argparse
+import image_generator
 
 argument_parser = argparse.ArgumentParser()
 subreddit_submission_group = argument_parser.add_mutually_exclusive_group(required=True)
@@ -31,26 +30,34 @@ def main():
     save_path = file.get_save_path(os.path.join('media', 'reddit'), submission_id)
     comment_length = arguments.length
     comment_count = int(arguments.comments)
-    texts = []
+    tts_texts = []
+    comments = []
 
     if arguments.title:
-        texts.append(submission.title)
+        tts_texts.append(submission.title)
 
     if arguments.body:
-        texts.append(submission.body)
+        tts_texts.append(submission.selftext)
 
     # TODO: implement getting every comment
     # TODO: implement comment length
     # TODO: implement bot comment filtering
     # TODO: rewrite database queries to suite the new options
     # TODO: rewrite getting exactly as many comments as specified in the option
+    # TODO: rewrite text wrapping
+    # TODO: figure out image drawing
     if comment_count != 0 or comment_count != -1:
         comment_ids = database.comments.get_random_comments(submission_id, comment_count)
         for comment_id in comment_ids:
             comment = config.REDDIT_CLIENT.comment(comment_id)
-            texts.append(text_processor.remove_duplicate_newlines(comment.body))
+            tts_texts.append(comment.body)
+            comments.append(comment.body)
+    else:
+        comments = False
 
-    text_to_speech.run(texts, save_path, text_to_speech.config_engine(150))
+    text_to_speech.run(tts_texts, save_path, text_to_speech.config_engine(150))
+    image_generator.run(submission, save_path, title=arguments.title, body=arguments.body, comments=comments)
+    print(arguments)
 
 if __name__ == '__main__':
     main()
