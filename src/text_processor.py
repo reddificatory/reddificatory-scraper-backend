@@ -29,7 +29,7 @@ def wrap_text(text, max_width, font):
     for line in lines:
         words = line.split(' ')
         for word in words:
-            if font.getlength(processing_line) + font.getlength(word) <= max_width:
+            if font.getlength(processing_line) + font.getlength(word) < max_width:
                 processing_line += f' {word}'
             else:
                 processed_text += f'\n{processing_line.strip()}'

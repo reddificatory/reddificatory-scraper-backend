@@ -10,30 +10,30 @@ import glob
 import text_processor
 import file
 
-# def get_profile_pic(author, save_path, index):
-#     file_name = f'icon{index}.png'
-#     path = os.path.join(save_path, file_name)
+def get_icon(redditor, save_path, file_index, image_width):
+    file_name = f'icon{file_index}.png'
+    path = os.path.join(save_path, file_name)
 
-#     if not os.path.exists(path):
-#         # TODO: Exception has occurred: AttributeError 'Redditor' object has no attribute 'icon_img'
-#         urllib.request.urlretrieve(author.icon_img, path)
-#         icon_image = Image.open(path)
-#         icon_image.thumbnail((50, 50))
-#         icon_image.save(path)
+    if not os.path.exists(path):
+        # TODO: Exception has occurred: AttributeError 'Redditor' object has no attribute 'icon_img'
+        urllib.request.urlretrieve(redditor.icon_img, path)
+        icon_image = Image.open(path)
+        icon_image.thumbnail((int(image_width * 0.06), int(image_width * 0.06)))
+        icon_image.save(path)
 
-#     return Image.open(path)
+    return Image.open(path)
 
-# def get_mask(image, save_path):
-#     path = os.path.join(save_path, 'mask.png')
+def get_mask(image, save_path):
+    path = os.path.join(save_path, 'mask.png')
 
-#     # if not os.path.exists:
-#     mask_image = Image.new('L', image.size, 0)
-#     draw = ImageDraw.Draw(mask_image)
-#     draw.ellipse((0, 0, image.size[0] - 1, image.size[1] - 1), 255)
-#     mask_image = mask_image.filter(ImageFilter.GaussianBlur(0.6))
-#     mask_image.save(path)
+    # if not os.path.exists:
+    mask_image = Image.new('L', image.size, 0)
+    draw = ImageDraw.Draw(mask_image)
+    draw.ellipse((0, 0, image.size[0] - 1, image.size[1] - 1), 255)
+    mask_image = mask_image.filter(ImageFilter.GaussianBlur(0.62))
+    mask_image.save(path)
 
-#     return Image.open(path)
+    return Image.open(path)
 
 # # TODO: get rid of empty lines
 # def generate_comment_image(comment, save_path, file_name, index):
@@ -187,13 +187,13 @@ def draw_submission(submission, save_path, file_name, title=False, body=False):
     title_font = ImageFont.truetype('C:\\Windows\\fonts\\Verdana.ttf', 30) 
     body_font = ImageFont.truetype('C:\\Windows\\fonts\\Verdana.ttf', 22) 
     
-    padding = 8
+    padding = 16
     image_width = 900
+    max_width = image_width - 2 * padding
     image_height = 2 * padding
     
     header = f'@askredditts.x • r/{submission.subreddit.display_name} • Follow for more content!'
-    #header = 'Lines for the\nheader of the image'
-    wrapped_header = text_processor.wrap_text(header, image_width - 2 * padding, header_font)
+    wrapped_header = text_processor.wrap_text(header, max_width, header_font)
     wrapped_title = ''
     wrapped_body = ''
     
@@ -203,13 +203,11 @@ def draw_submission(submission, save_path, file_name, title=False, body=False):
 
     image_height += header_height
     if title:
-        wrapped_title = text_processor.wrap_text(submission.title, image_width - 2 * padding, title_font)
-        #wrapped_title = 'Lines for the\ntitle of the image'
+        wrapped_title = text_processor.wrap_text(submission.title, max_width, title_font)
         title_height = get_text_height(wrapped_title, title_font)
         image_height += title_height + padding    
     if body:        
-        wrapped_body = text_processor.wrap_text(submission.selftext, image_width - 2 * padding, body_font)
-        #wrapped_body = '[Line]\'"s for the\nbody of the image'
+        wrapped_body = text_processor.wrap_text(submission.selftext, max_width, body_font)
         body_height = get_text_height(wrapped_body, body_font)
         image_height += body_height + padding
     
@@ -220,43 +218,54 @@ def draw_submission(submission, save_path, file_name, title=False, body=False):
     # y = padding 
     y = 0
 
-    y1 = y
-    y2 = y1 + padding
-
-    draw.rectangle(((0, 0), (padding, image_height)), fill='green')
-    draw.rectangle(((image_width - padding, 0), (image_width, image_height)), fill='green')
-
     draw.multiline_text((x, y), wrapped_header, font=header_font)
-    draw.rectangle(((x, y1), (image_width - x, y2)), fill='red')
     y += header_height
 
-    y1 = y
-    y2 = y1 + padding
-    draw.rectangle(((x, y1), (image_width - x, y2)), fill='red')
     if title:
-        # y += padding
-        print(wrapped_title)
         draw.multiline_text((x, y), wrapped_title, font=title_font)
         y += title_height
-
-        y1 = y
-        y2 = y1 + padding
-        draw.rectangle(((x, y1), (image_width - x, y2)), fill='red')
     if body:
-        # y += padding
-        print(submission.selftext)
-        print(wrapped_body)
         draw.multiline_text((x, y), wrapped_body, font=body_font)
         y += body_height
 
-        y1 = y
-        y2 = y1 + padding
-        draw.rectangle(((x, y1), (image_width - x, y2)), fill='red')
+    image.save(os.path.join(save_path, file_name), 'PNG')
 
-    image.show()
+def draw_comment(comment, save_path, file_index, file_name):
+    username_font = ImageFont.truetype('C:\\Windows\\fonts\\Verdana.ttf', 26)
+    body_font = ImageFont.truetype('C:\\Windows\\fonts\\Verdana.ttf', 28)
 
-def draw_comment(text, save_path, file_name):
-    print(file_name)
+    padding = 16
+    image_width = 900
+    icon = get_icon(comment.author, save_path, file_index, image_width)
+    icon_mask = get_mask(icon, save_path)
+    max_width = image_width - (3 * padding + icon.width)
+    image_height = 2 * padding
+    
+    wrapped_username = text_processor.wrap_text(comment.author.name, max_width, username_font)
+    wrapped_body = text_processor.wrap_text(comment.body, max_width, body_font)
+    
+    username_height = get_text_height(wrapped_username, username_font)
+    body_height = get_text_height(wrapped_body, body_font)
+
+    image_height += username_height + padding + body_height
+
+    background_color = ImageColor.getrgb('#1A1A1B')
+    image = Image.new('RGB', (image_width, image_height), background_color)
+    x = padding
+    y = padding   
+
+    base_image = image.copy()
+    draw = ImageDraw.Draw(base_image)
+
+    base_image.paste(icon, (x, y, icon.width + x, icon.height + y), icon_mask)    
+    draw.line(((padding + icon.width / 2, icon.height + 2 * padding), (padding + icon.width / 2, image_height - padding)), fill=(52, 53, 54), width=3)
+
+    # TODO: figure out correct positioning
+    draw.multiline_text((icon.width + 2 * padding, icon.height / 2), wrapped_username, font=username_font)
+    y += username_height + padding
+    draw.multiline_text((icon.width + 2 * padding, icon.height / 2), wrapped_body, font=body_font)
+
+    base_image.show()
 
 def run(submission, save_path, title=True, body=False, comments=False):
     list_length = 0
@@ -266,15 +275,17 @@ def run(submission, save_path, title=True, body=False, comments=False):
 
     if title or body:
         list_length += 1
-        file_name = f'image{file.get_index(list_length, index)}.png'
+        file_index = file.get_index(list_length, index)
+        file_name = f'image{file_index}.png'
         draw_submission(submission, save_path, file_name, title, body)
         index += 1
 
     if comments:
-        while index < len(comments):
-            file_name = f'image{file.get_index(list_length, index)}.png'    
-            draw_comment(text_processor.remove_duplicate_newlines(comments[index]), save_path, file_name)
-            #print(text_processor.remove_duplicate_newlines(comments[index]))
+        print(index, len(comments))
+        while index < len(comments) + 1:
+            file_index = file.get_index(list_length, index)
+            file_name = f'image{file_index}.png'
+            draw_comment(comments[index - 1], save_path, file_index, file_name)
             index += 1
 
 # # comment = config.REDDIT_CLIENT.comment(id='jbwucnw')

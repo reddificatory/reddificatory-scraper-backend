@@ -33,10 +33,11 @@ def main():
     tts_texts = []
     comments = []
 
-    if arguments.title:
+    if arguments.title and arguments.body:
+        tts_texts.append(f'{submission.title}\n{submission.selftext}')
+    elif arguments.title:
         tts_texts.append(submission.title)
-
-    if arguments.body:
+    elif arguments.body:
         tts_texts.append(submission.selftext)
 
     # TODO: implement getting every comment
@@ -51,7 +52,7 @@ def main():
         for comment_id in comment_ids:
             comment = config.REDDIT_CLIENT.comment(comment_id)
             tts_texts.append(comment.body)
-            comments.append(comment.body)
+            comments.append(config.REDDIT_CLIENT.comment(comment_id))
     else:
         comments = False
 
