@@ -43,13 +43,14 @@ def main():
     # TODO: implement comment length
     # TODO: implement bot comment filtering
     # TODO: rewrite database queries to suite the new options
+    # TODO: rewrite getting exactly as many comments as specified in the option
     if comment_count != 0 or comment_count != -1:
         comment_ids = database.comments.get_random_comments(submission_id, comment_count)
         for comment_id in comment_ids:
             comment = config.REDDIT_CLIENT.comment(comment_id)
             texts.append(text_processor.remove_duplicate_newlines(comment.body))
 
-    print(arguments, texts)
+    text_to_speech.run(texts, save_path, text_to_speech.config_engine(150))
 
 if __name__ == '__main__':
     main()

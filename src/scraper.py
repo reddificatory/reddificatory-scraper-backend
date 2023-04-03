@@ -32,11 +32,12 @@ def get_comments(submission_id, strong):
     logger.logger.debug(f'Getting comments from {submission.id}...')
     submission.comments.replace_more(limit=0)
     for comment in submission.comments:
-        if strong:
+        author = comment.author
+        if strong and not author.is_mod:
             if text_processor.is_strong(comment.body):
                 comments.add(comment)
                 database.comments.store_comment(comment.id, submission.id, len(comment.body), text_processor.is_strong(comment.body))
-        else:
+        elif not author.is_mod:
             comments.add(comment)
             database.comments.store_comment(comment.id, submission.id, len(comment.body), text_processor.is_strong(comment.body))
 
@@ -65,9 +66,9 @@ def main():
     
     if arguments.submission:
         submission = config.REDDIT_CLIENT.submission(arguments.submission)
-        database.submissions.store_submission(submission.subreddit, submission.id, text_processor.is_strong(submission))
-        
-        comments = get_comments(submission.id)
+        database.submissions.store_submission(submission.subreddit, submission.id, text_processor.is_strong(submission.title))
+        print(arguments)
+        comments = get_comments(arguments.submission, arguments.strong)
 
     if arguments.subreddit:
         scrape(arguments.subreddit, arguments.strong)
