@@ -23,28 +23,20 @@ def remove_duplicate_newlines(text):
 
 def wrap_text(text, max_width, font):
     processed_text = ''
-    line = ''
-    words = text.split(' ')
+    processing_line = ''
+    lines = text.split('\n')
 
-    for word in words:
-        if font.getlength(line) + font.getlength(word) <= max_width:
-            line += f' {word}'
-            # print('sorhoz:', word)
-        else:
-            processed_text += f'\n{line.strip()}'
-            line = word
-            # print('tores:', word)
+    for line in lines:
+        words = line.split(' ')
+        for word in words:
+            if font.getlength(processing_line) + font.getlength(word) <= max_width:
+                processing_line += f' {word}'
+            else:
+                processed_text += f'\n{processing_line.strip()}'
+                processing_line = word
 
-    if line:
-        processed_text += f'\n{line.strip()}'
-
+        if processing_line:
+            processed_text += f'\n{processing_line.strip()}'
+            processing_line = ''
+        
     return processed_text
-
-# def get_text_height(text, font):
-#     height = 0
-#     lines = text.strip().split('\n')
-
-#     for line in lines:
-#         height += font.getbbox(line)[3]
-
-#     return height

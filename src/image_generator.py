@@ -193,7 +193,7 @@ def draw_submission(submission, save_path, file_name, title=False, body=False):
     
     header = f'@askredditts.x • r/{submission.subreddit.display_name} • Follow for more content!'
     #header = 'Lines for the\nheader of the image'
-    wrapped_header = text_processor.wrap_text(text_processor.remove_duplicate_newlines(header), image_width - 2 * padding, header_font)
+    wrapped_header = text_processor.wrap_text(header, image_width - 2 * padding, header_font)
     wrapped_title = ''
     wrapped_body = ''
     
@@ -203,12 +203,12 @@ def draw_submission(submission, save_path, file_name, title=False, body=False):
 
     image_height += header_height
     if title:
-        wrapped_title = text_processor.wrap_text(text_processor.remove_duplicate_newlines(submission.title), image_width - 2 * padding, title_font)
+        wrapped_title = text_processor.wrap_text(submission.title, image_width - 2 * padding, title_font)
         #wrapped_title = 'Lines for the\ntitle of the image'
         title_height = get_text_height(wrapped_title, title_font)
         image_height += title_height + padding    
     if body:        
-        wrapped_body = text_processor.wrap_text(text_processor.remove_duplicate_newlines(submission.selftext), image_width - 2 * padding, body_font)
+        wrapped_body = text_processor.wrap_text(submission.selftext, image_width - 2 * padding, body_font)
         #wrapped_body = '[Line]\'"s for the\nbody of the image'
         body_height = get_text_height(wrapped_body, body_font)
         image_height += body_height + padding
