@@ -8,6 +8,11 @@ import database.comments
 import argparse
 import image_generator
 
+    # TODO: implement -a/--scrape option to run the scraper automatically if the submission is not scraped yet
+    # TODO: rewrite database queries to suite the new options
+    # TODO: rewrite image mergeing and video creation
+    # TODO: implement bot comment filtering
+
 argument_parser = argparse.ArgumentParser()
 subreddit_submission_group = argument_parser.add_mutually_exclusive_group(required=True)
 subreddit_submission_group.add_argument('-S', '--submission', dest='submission', help='Specify submission.')
@@ -46,11 +51,6 @@ def main():
     elif arguments.body:
         tts_texts.append(submission.selftext)
 
-    # TODO: implement getting every comment
-    # TODO: implement comment length
-    # TODO: implement bot comment filtering
-    # TODO: rewrite database queries to suite the new options
-    # TODO: rewrite getting exactly as many comments as specified in the option
     if comment_count != 0 or comment_count != -1:
         comment_ids = database.comments.get_comments(submission.id, comment_max_length, comment_count, strong)
 

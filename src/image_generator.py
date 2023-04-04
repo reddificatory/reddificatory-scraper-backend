@@ -18,21 +18,22 @@ def get_icon(redditor, save_path, file_index, image_width):
         # TODO: Exception has occurred: AttributeError 'Redditor' object has no attribute 'icon_img'
         urllib.request.urlretrieve(redditor.icon_img, path)
         icon_image = Image.open(path)
+
         icon_image.thumbnail((int(image_width * 0.06), int(image_width * 0.06)))
+
         icon_image.save(path)
 
     return Image.open(path)
 
 def get_mask(image, save_path):
     path = os.path.join(save_path, 'mask.png')
-
-    # if not os.path.exists:
     mask_image = Image.new('L', image.size, 0)
     draw = ImageDraw.Draw(mask_image)
+
     draw.ellipse((0, 0, image.size[0] - 1, image.size[1] - 1), 255)
     mask_image = mask_image.filter(ImageFilter.GaussianBlur(0.62))
-    mask_image.save(path)
 
+    mask_image.save(path)
     return Image.open(path)
 
 # def merge_images():
@@ -43,34 +44,32 @@ def get_mask(image, save_path):
 #     # os.system('ffmpeg -f concat -i images.txt merged.mp4')
 #     os.system('ffmpeg -f concat -i images.txt merged.mp4')
 
-# def max_image_height(save_path):
-#     image_paths = glob.glob(os.path.join(save_path, 'image*.png'))
-#     max_height = Image.open(image_paths[0]).size[1]
-
-#     for image_path in image_paths:
-#         image_height = Image.open(image_path).size[1]
+def get_max_image_height(image_files):
+    max_height = Image.open(image_files[0]).size[1]
+    for image_file in image_files:
+        image_height = Image.open(image_file).size[1]
         
-#         if image_height > max_height:
-#             max_height = image_height
+        if image_height > max_height:
+            max_height = image_height
 
-#     return max_height
+    return max_height
 
-# def get_image_files(save_path):
-#     return glob.glob(os.path.join(save_path, 'image*.png'))
+def get_image_files(path):
+    return glob.glob(os.path.join(path, 'image*.png'))
 
-# def resize_image(file_name, height):
-#     width = 950
-#     image = Image.open(file_name)
-#     blank_image = Image.new('RGBA', (width, height), (0, 0, 0, 0))
-#     y = int(round((height - image.size[1]) / 2, 0))
+def resize_image(file_name, height):
+    image = Image.open(file_name)
+    blank_image = Image.new('RGBA', (image.width, height), (0, 0, 0, 0))
 
-#     blank_image.paste(image, (0, y))
-#     blank_image.save(file_name)
+    y = int(round((height - image.size[1]) / 2, 0))    
+    blank_image.paste(image, (0, y))
+
+    blank_image.save(file_name)
 
 def get_text_height(text, font):
     bbox_draw = ImageDraw.Draw(Image.new('RGB', (0, 0)))
     bbox = bbox_draw.textbbox((0, 0), text, font) # left, top, right, bottom
-    # print(f'{text}: {bbox[3]}')
+    
     return bbox[3]
 
 def draw_submission(submission, save_path, file_name, title=False, body=False):
@@ -186,3 +185,8 @@ def run(submission, save_path, title=False, body=False, comments=False):
             file_name = f'image{file_index}.png'
             draw_comment(comments[index - difference], save_path, file_index, file_name)
             index += 1
+
+    image_files = get_image_files(save_path)
+    max_image_height = get_max_image_height(image_files)
+    for image_file in image_files:
+        resize_image(image_file, max_image_height)
