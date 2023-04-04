@@ -215,7 +215,6 @@ def draw_submission(submission, save_path, file_name, title=False, body=False):
     image = Image.new('RGB', (image_width, image_height), background_color)
     draw = ImageDraw.Draw(image)    
     x = padding
-    # y = padding 
     y = padding
 
     draw.multiline_text((x, y), wrapped_header, font=header_font)
@@ -274,6 +273,7 @@ def draw_comment(comment, save_path, file_index, file_name):
 def run(submission, save_path, title=True, body=False, comments=False):
     list_length = 0
     index = 0
+    difference = 0
     if comments:
         list_length += len(comments)
 
@@ -283,24 +283,11 @@ def run(submission, save_path, title=True, body=False, comments=False):
         file_name = f'image{file_index}.png'
         draw_submission(submission, save_path, file_name, title, body)
         index += 1
+        difference += 1
 
     if comments:
-        # print(index, len(comments))
-        while index < len(comments) + 1:
+        while index < len(comments) + difference:
             file_index = file.get_index(list_length, index)
             file_name = f'image{file_index}.png'
-            draw_comment(comments[index - 1], save_path, file_index, file_name)
+            draw_comment(comments[index - difference], save_path, file_index, file_name)
             index += 1
-
-# # comment = config.REDDIT_CLIENT.comment(id='jbwucnw')
-# save_path = 'media\\AskReddit\\11pk6qu'
-# max_height = max_image_height(save_path)
-# # durations = text_to_speech.audio.get_durations(save_path)
-# # submission_id = '11pfqs6'
-# # file_name = 'image01.png'
-# # # # save_path = 'D:\\coding\\Python\\python-reddit-tts\\media\\AskReddit\\11p9o5i'
-
-# # generate_submission_picture(submission_id, save_path, file_name)
-
-# # merge_images(save_path)
-# resize_image(save_path, 'image3.png', 200)

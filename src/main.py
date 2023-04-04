@@ -45,14 +45,12 @@ def main():
     # TODO: implement bot comment filtering
     # TODO: rewrite database queries to suite the new options
     # TODO: rewrite getting exactly as many comments as specified in the option
-    # TODO: rewrite text wrapping
-    # TODO: figure out image drawing
     if comment_count != 0 or comment_count != -1:
         comment_ids = database.comments.get_random_comments(submission_id, comment_count)
         for comment_id in comment_ids:
             comment = config.REDDIT_CLIENT.comment(comment_id)
             tts_texts.append(comment.body)
-            comments.append(config.REDDIT_CLIENT.comment(comment_id))
+            comments.append(comment)
     else:
         comments = False
 
