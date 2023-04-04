@@ -39,4 +39,4 @@ def wrap_text(text, max_width, font):
             processed_text += f'\n{processing_line.strip()}'
             processing_line = ''
         
-    return processed_text
+    return processed_text.strip()

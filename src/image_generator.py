@@ -175,7 +175,7 @@ def get_mask(image, save_path):
 def get_text_height(text, font):
     bbox_draw = ImageDraw.Draw(Image.new('RGB', (0, 0)))
     bbox = bbox_draw.textbbox((0, 0), text, font) # left, top, right, bottom
-    #print(bbox[3])
+    # print(f'{text}: {bbox[3]}')
     return bbox[3]
 
 def draw_submission(submission, save_path, file_name, title=False, body=False):
@@ -216,17 +216,17 @@ def draw_submission(submission, save_path, file_name, title=False, body=False):
     draw = ImageDraw.Draw(image)    
     x = padding
     # y = padding 
-    y = 0
+    y = padding
 
     draw.multiline_text((x, y), wrapped_header, font=header_font)
-    y += header_height
+    y += header_height + padding
 
     if title:
         draw.multiline_text((x, y), wrapped_title, font=title_font)
-        y += title_height
+        y += title_height + padding
     if body:
         draw.multiline_text((x, y), wrapped_body, font=body_font)
-        y += body_height
+        y += body_height + padding
 
     image.save(os.path.join(save_path, file_name), 'PNG')
 
@@ -239,7 +239,7 @@ def draw_comment(comment, save_path, file_index, file_name):
     icon = get_icon(comment.author, save_path, file_index, image_width)
     icon_mask = get_mask(icon, save_path)
     max_width = image_width - (3 * padding + icon.width)
-    image_height = 2 * padding
+    image_height = 3 * padding + icon.height
     
     wrapped_username = text_processor.wrap_text(comment.author.name, max_width, username_font)
     wrapped_body = text_processor.wrap_text(comment.body, max_width, body_font)
@@ -247,7 +247,8 @@ def draw_comment(comment, save_path, file_index, file_name):
     username_height = get_text_height(wrapped_username, username_font)
     body_height = get_text_height(wrapped_body, body_font)
 
-    image_height += username_height + padding + body_height
+    # image_height += username_height + padding + body_height
+    image_height += body_height
 
     background_color = ImageColor.getrgb('#1A1A1B')
     image = Image.new('RGB', (image_width, image_height), background_color)
@@ -258,14 +259,17 @@ def draw_comment(comment, save_path, file_index, file_name):
     draw = ImageDraw.Draw(base_image)
 
     base_image.paste(icon, (x, y, icon.width + x, icon.height + y), icon_mask)    
-    draw.line(((padding + icon.width / 2, icon.height + 2 * padding), (padding + icon.width / 2, image_height - padding)), fill=(52, 53, 54), width=3)
+    draw.line(((padding + icon.width / 2, 2 * padding + icon.height), (padding + icon.width / 2, image_height - padding)), fill=(52, 53, 54), width=3)
 
-    # TODO: figure out correct positioning
-    draw.multiline_text((icon.width + 2 * padding, icon.height / 2), wrapped_username, font=username_font)
-    y += username_height + padding
-    draw.multiline_text((icon.width + 2 * padding, icon.height / 2), wrapped_body, font=body_font)
+    draw.multiline_text((icon.width + 2 * padding, icon.height / 2 + padding - username_height / 2), wrapped_username, font=username_font)
+    # bbox = draw.textbbox((icon.width + 2 * padding, icon.height / 2 + padding - username_height / 2), wrapped_username, font=username_font)
+    # draw.rectangle(bbox, outline='red')
 
-    base_image.show()
+    draw.multiline_text((icon.width + 2 * padding, icon.height + 2 * padding), wrapped_body, font=body_font)
+    # bbox = draw.textbbox((icon.width + 2 * padding, 2 * padding + icon.height), wrapped_body, font=body_font)
+    # draw.rectangle(bbox, outline='green')
+
+    base_image.save(os.path.join(save_path, file_name), 'PNG')
 
 def run(submission, save_path, title=True, body=False, comments=False):
     list_length = 0
@@ -281,7 +285,7 @@ def run(submission, save_path, title=True, body=False, comments=False):
         index += 1
 
     if comments:
-        print(index, len(comments))
+        # print(index, len(comments))
         while index < len(comments) + 1:
             file_index = file.get_index(list_length, index)
             file_name = f'image{file_index}.png'
