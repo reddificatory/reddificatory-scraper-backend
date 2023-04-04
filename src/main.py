@@ -10,7 +10,8 @@ import image_generator
 
     # TODO: implement -a/--scrape option to run the scraper automatically if the submission is not scraped yet
     # TODO: rewrite database queries to suite the new options
-    # TODO: rewrite image mergeing and video creation
+    # TODO: figure out video transparency
+    # TODO: rewrite image merging and video creation
     # TODO: implement bot comment filtering
 
 argument_parser = argparse.ArgumentParser()

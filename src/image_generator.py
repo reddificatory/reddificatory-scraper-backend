@@ -4,7 +4,7 @@ sys.path.insert(0, os.getcwd() + '/src')
 from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageColor
 import urllib.request
 import file
-# import audio
+import audio
 import config
 import glob
 import text_processor
@@ -69,7 +69,7 @@ def resize_image(file_name, height):
 def get_text_height(text, font):
     bbox_draw = ImageDraw.Draw(Image.new('RGB', (0, 0)))
     bbox = bbox_draw.textbbox((0, 0), text, font) # left, top, right, bottom
-    
+
     return bbox[3]
 
 def draw_submission(submission, save_path, file_name, title=False, body=False):
@@ -168,23 +168,39 @@ def run(submission, save_path, title=False, body=False, comments=False):
     list_length = 0
     index = 0
     difference = 0
+    image_list_file = open(os.path.join(save_path, 'images.txt'), 'w', encoding='UTF-8')
+
     if comments:
         list_length += len(comments)
 
     if title or body:
         list_length += 1
         file_index = file.get_index(list_length, index)
-        file_name = f'image{file_index}.png'
-        draw_submission(submission, save_path, file_name, title, body)
+        image_file_name = f'image{file_index}.png'
+        audio_file_name = f'audio{file_index}.wav'
+        audio_file = os.path.join(save_path, audio_file_name)
+
+        draw_submission(submission, save_path, image_file_name, title, body)
+        image_list_file.write(f'file {image_file_name}\n')
+        image_list_file.write(f'duration {audio.get_duration(audio_file)}\n')
+
         index += 1
         difference += 1
 
     if comments:
         while index < len(comments) + difference:
             file_index = file.get_index(list_length, index)
-            file_name = f'image{file_index}.png'
-            draw_comment(comments[index - difference], save_path, file_index, file_name)
+            image_file_name = f'image{file_index}.png'
+            audio_file_name = f'audio{file_index}.wav'
+            audio_file = os.path.join(save_path, audio_file_name)
+            
+            draw_comment(comments[index - difference], save_path, file_index, image_file_name)
+            image_list_file.write(f'file {image_file_name}\n')
+            image_list_file.write(f'duration {audio.get_duration(audio_file)}\n')
+
             index += 1
+
+    image_list_file.close()
 
     image_files = get_image_files(save_path)
     max_image_height = get_max_image_height(image_files)
