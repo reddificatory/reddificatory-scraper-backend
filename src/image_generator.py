@@ -35,111 +35,6 @@ def get_mask(image, save_path):
 
     return Image.open(path)
 
-# # TODO: get rid of empty lines
-# def generate_comment_image(comment, save_path, file_name, index):
-#     author = comment.author
-#     icon = get_profile_pic(author, save_path, index)
-#     username = author.name
-#     body = comment.body
-#     score = comment.score
-    
-#     header_font = ImageFont.truetype('C:\\Windows\\fonts\\Verdana.ttf', 26)
-#     body_font = ImageFont.truetype('C:\\Windows\\fonts\\Verdana.ttf', 28)
-#     width = 950
-#     margin = 8
-#     score_height = 20
-#     # TODO: figure out offset instead of a magic constant
-#     text_offset = 36
-#     text = image_generator.text.process_text(body, width, body_font, margin, icon)
-#     text_height = image_generator.text.get_text_height(text, body_font)
-#     height = text_height + text_offset + icon.height + margin
-#     # height = text_height + text_offset + score_height + icon.height + margin
-
-#     image = Image.new(mode='RGBA', size=(width, height), color=ImageColor.getrgb('#1A1A1B'))
-#     mask_image = get_mask(icon, save_path)
-#     draw = ImageDraw.Draw(image)
-    
-#     header_y = (2 * margin + icon.height) / 2 - (header_font.getbbox(username)[3] / 2)
-#     draw.text((2 * margin + icon.width, header_y), username, fill=(255, 255, 255), font=header_font)
-
-#     # TODO: figure out how to draw text without offset
-#     draw.multiline_text((2 * margin + icon.width, icon.height), text, fill=(255,255,255), font=body_font)
-
-#     line_x1 = (2 * margin + icon.width) / 2
-#     line_x2 = line_x1
-#     line_y1 = 2 * margin + icon.height
-#     line_y2 = height
-#     line_coords1 = (line_x1, line_y1)
-#     line_coords2 = (line_x2, line_y2)
-#     draw.line([line_coords1, line_coords2], fill=(52, 53, 54), width=2)
-
-#     base_image = image.copy()
-#     base_image.paste(icon, (margin, margin, icon.width + margin, icon.height + margin), mask_image)
-
-#     base_image.save(os.path.join(save_path, file_name), 'PNG')
-
-# # TODO: finish this
-# def generate_submission_image(submission_id, save_path, file_name):
-#     submission = config.REDDIT_CLIENT.submission(submission_id)
-#     author = submission.author
-#     username = author.name
-#     title = submission.title
-#     score = submission.score
-
-#     header_font = ImageFont.truetype('C:\\Windows\\fonts\\Verdana.ttf', 26)
-#     title_font = ImageFont.truetype('C:\\Windows\\fonts\\Verdana.ttf', 31)
-#     width = 950
-#     margin = 8
-#     text_offset = 36
-#     header = f'@askredditts.x • r/{submission.subreddit.display_name} • Follow for more content!'
-#     header_height = image_generator.text.get_text_height(header, header_font)
-#     text = image_generator.text.process_text(title, width, title_font, margin)
-#     text_height = image_generator.text.get_text_height(text, title_font)
-#     height = 3 * margin + header_height + text_height + text_offset
-
-#     image = Image.new(mode='RGB', size=(width, height), color=ImageColor.getrgb('#1A1A1B'))
-#     draw = ImageDraw.Draw(image)
-
-#     draw.text((margin, margin), header, fill=(255, 255, 255), font=header_font)
-#     draw.multiline_text((margin , margin + header_height), text, fill=(255,255,255), font=title_font)
-
-#     image.save(os.path.join(save_path, file_name), 'PNG')
-
-# def generate_images(submission_id, comments, save_path):
-#     image_list_file = open(os.path.join(save_path, 'images.txt'), 'w', encoding='UTF-8')
-#     image_file_name = file.get_file_name(comments, 0, 'image', '.png')[0]
-#     audio_file_name = file.get_file_name(comments, 0, 'audio', '.wav')[0]
-
-#     print('Generating submission image...')
-#     generate_submission_image(submission_id, save_path, image_file_name)
-#     print(f'Saved submission image to {os.path.join(save_path, image_file_name)}')
-#     image_list_file.write(f'file {image_file_name}\n')
-#     image_list_file.write(f'outpoint {librosa.get_duration(path=os.path.join(save_path, audio_file_name))}\n')
-    
-#     print('Generating comment images...')
-#     i = 1
-#     for comment in comments:
-#         index = file.get_file_name(comments, i, 'image', '.png')[1]
-#         image_file_name = file.get_file_name(comments, i, 'image', '.png')[0]
-#         audio_file_name = file.get_file_name(comments, i, 'audio', '.wav')[0]
-#         generate_comment_image(comment, save_path, image_file_name, index)
-#         image_list_file.write(f'file {image_file_name}\n')
-#         image_list_file.write(f'outpoint {librosa.get_duration(path=os.path.join(save_path, audio_file_name))}\n')
-#         i += 1
-
-#     path = os.path.join(save_path, 'images*.png')
-#     print(f'Saved submission image to {path}')
-#     image_list_file.close()
-
-#     max_height = max_image_height(save_path)
-#     image_files = get_image_files(save_path)
-
-#     print('Resizing images...')
-#     for image_file in image_files:
-#         resize_image(image_file, max_height)
-#     print('Images resized')
-
-
 # def merge_images():
 #     # print(os.getcwd())
 #     # media_path = os.path.join(os.getcwd(), save_path)
@@ -270,7 +165,7 @@ def draw_comment(comment, save_path, file_index, file_name):
 
     base_image.save(os.path.join(save_path, file_name), 'PNG')
 
-def run(submission, save_path, title=True, body=False, comments=False):
+def run(submission, save_path, title=False, body=False, comments=False):
     list_length = 0
     index = 0
     difference = 0
