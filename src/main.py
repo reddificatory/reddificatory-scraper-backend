@@ -12,7 +12,10 @@ import audio
 
     # TODO: implement -a/--scrape option to run the scraper automatically if the submission is not scraped yet
     # TODO: rewrite database queries to suite the new options
-    # TODO: rewrite image merging and video creation
+    # TODO: rewrite video creation
+        # get background video
+        # merge background video, overlay and audio
+        # vertical and landscape mode
     # TODO: implement bot comment filtering
 
 argument_parser = argparse.ArgumentParser()
