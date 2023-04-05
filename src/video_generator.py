@@ -11,17 +11,32 @@ def merge_images(save_path):
     os.chdir(current_directory)
 
 def run(save_path):
+    background_path = os.path.join(os.getcwd(), 'media', 'background')
+    background_video = get_background_video(background_path)
+    background_video_duration = get_duration(background_path, background_video)
+    overlay_video = 'merged.mp4'
+    overlay_video_duration = get_duration(save_path, overlay_video)
+    print(background_video_duration, overlay_video_duration)
+
     merge_images(save_path)
 
-# def get_video_duration(file_name):
-#     print(os.getcwd(), file_name)
-#     return float(subprocess.check_output(f'ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "{file_name}"').decode())
+# TODO: figure out how to get the video duration properly
+def get_duration(path, file_name):
+    current_directory = os.getcwd()
+    path = os.path.join(current_directory, path)
+    os.chdir(path)
+    duration = float(subprocess.check_output(f'ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "{file_name}"').decode())
+    os.chdir(current_directory)
 
-# def get_random_gameplay():
-#     #print(os.getcwd(), glob.glob(os.path.join('..', '..', '..', 'gameplays', '*')))
-#     gameplays = glob.glob(os.path.join('..', '..', '..', 'gameplays', '*'))
-#     random_index = random.randint(1, len(gameplays)) - 1
-#     return gameplays[random_index]
+    return duration
+
+def get_background_video(path):
+    videos = glob.glob(os.path.join(path, '*.webm'))
+    random_index = random.randint(0, len(videos) - 1)
+
+    print(videos, random_index)
+
+    return videos[random_index]
 
 # def get_gameplay_duration():
 #     gameplay = get_random_gameplay()

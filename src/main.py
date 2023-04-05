@@ -13,7 +13,7 @@ import audio
     # TODO: implement -a/--scrape option to run the scraper automatically if the submission is not scraped yet
     # TODO: rewrite database queries to suite the new options
     # TODO: rewrite video creation
-        # get background video
+        # get specific bg vid
         # merge background video, overlay and audio
         # vertical and landscape mode
     # TODO: implement bot comment filtering
@@ -42,7 +42,6 @@ def main():
         comment_max_length = int(arguments.max_length)
 
     submission = config.REDDIT_CLIENT.submission(submission_id)
-    subreddit = submission.subreddit
     save_path = file.get_save_path(os.path.join('media', 'reddit'), submission_id)
     comment_count = int(arguments.comments)
     strong = arguments.strong
@@ -71,12 +70,5 @@ def main():
     image_generator.run(submission, save_path, title=arguments.title, body=arguments.body, comments=comments)
     video_generator.run(save_path)
 
-    print(arguments)
-    
-
 if __name__ == '__main__':
     main()
-
-# subreddit = 'askreddit'
-# submission_id = database.submissions.get_random_submission()
-# save_path = file.get_save_path(os.path.join('media', 'reddit'), submission_id)
