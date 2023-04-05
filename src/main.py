@@ -7,10 +7,11 @@ import database.submissions
 import database.comments
 import argparse
 import image_generator
+import video_generator
+import audio
 
     # TODO: implement -a/--scrape option to run the scraper automatically if the submission is not scraped yet
     # TODO: rewrite database queries to suite the new options
-    # TODO: figure out video transparency
     # TODO: rewrite image merging and video creation
     # TODO: implement bot comment filtering
 
@@ -63,8 +64,12 @@ def main():
         comments = False
 
     text_to_speech.run(tts_texts, save_path, text_to_speech.config_engine(150))
+    audio.merge_audios(save_path)
     image_generator.run(submission, save_path, title=arguments.title, body=arguments.body, comments=comments)
+    video_generator.run(save_path)
+
     print(arguments)
+    
 
 if __name__ == '__main__':
     main()

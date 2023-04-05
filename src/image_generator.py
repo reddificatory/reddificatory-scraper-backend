@@ -36,14 +36,6 @@ def get_mask(image, save_path):
     mask_image.save(path)
     return Image.open(path)
 
-# def merge_images():
-#     # print(os.getcwd())
-#     # media_path = os.path.join(os.getcwd(), save_path)
-#     # media_path = os.path.join(save_path)
-#     # os.chdir(media_path)
-#     # os.system('ffmpeg -f concat -i images.txt merged.mp4')
-#     os.system('ffmpeg -f concat -i images.txt merged.mp4')
-
 def get_max_image_height(image_files):
     max_height = Image.open(image_files[0]).size[1]
     for image_file in image_files:

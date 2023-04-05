@@ -41,6 +41,13 @@ def get_gameplay_section(gameplay, start_time, end_time):
     os.system(command)
     print(command)
 
+def merge_images(save_path):
+    current_directory = os.getcwd()
+    save_path = os.path.join(current_directory, save_path)
+    os.chdir(save_path)
+    os.system(f'ffmpeg -f concat -i images.txt -c png merged.mp4')
+    os.chdir(current_directory)
+
 def get_merged_video():
     #path = os.path.join(os.getcwd(), save_path)
     #os.chdir(path)    
