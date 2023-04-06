@@ -16,6 +16,7 @@ import audio
         # get specific bg vid
         # merge background video, overlay and audio
         # vertical and landscape mode
+    # TODO: implement markdown
     # TODO: implement bot comment filtering
 
 argument_parser = argparse.ArgumentParser()
@@ -42,7 +43,7 @@ def main():
         comment_max_length = int(arguments.max_length)
 
     submission = config.REDDIT_CLIENT.submission(submission_id)
-    save_path = file.get_save_path(os.path.join('media', 'reddit'), submission_id)
+    save_path = file.get_save_path(os.path.join(os.getcwd(), 'media', 'reddit'), submission_id)
     comment_count = int(arguments.comments)
     strong = arguments.strong
     tts_texts = []
