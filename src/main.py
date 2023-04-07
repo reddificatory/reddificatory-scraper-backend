@@ -69,6 +69,7 @@ def main():
     audio.merge_audios(save_path)
     image_generator.run(submission, save_path, title=arguments.title, body=arguments.body, comments=comments)
     video_generator.run(save_path)
+    database.submissions.update_submission(submission_id, 'used')
 
 if __name__ == '__main__':
     main()
