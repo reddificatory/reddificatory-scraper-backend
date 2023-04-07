@@ -174,7 +174,7 @@ def run(submission, save_path, title=False, body=False, comments=False):
 
         draw_submission(submission, save_path, image_file_name, title, body)
         image_list_file.write(f'file {image_file_name}\n')
-        image_list_file.write(f'outpoint {audio.get_duration(audio_file)}\n')
+        image_list_file.write(f'duration {audio.get_duration(audio_file)}\n')
 
         index += 1
         difference += 1
@@ -188,7 +188,7 @@ def run(submission, save_path, title=False, body=False, comments=False):
             
             draw_comment(comments[index - difference], save_path, file_index, image_file_name)
             image_list_file.write(f'file {image_file_name}\n')
-            image_list_file.write(f'outpoint {audio.get_duration(audio_file)}\n')
+            image_list_file.write(f'duration {audio.get_duration(audio_file)}\n')
 
             index += 1
 
