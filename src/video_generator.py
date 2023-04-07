@@ -42,7 +42,7 @@ def get_background_video(path):
     current_directory = os.getcwd()
     path = os.path.join(current_directory, path)
     os.chdir(path)
-    videos = glob.glob('*.webm')
+    videos = glob.glob('*')
     random_index = random.randint(0, len(videos) - 1)
     os.chdir(current_directory)
 

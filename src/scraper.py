@@ -33,13 +33,18 @@ def get_comments(submission_id, strong):
     submission.comments.replace_more(limit=0)
     for comment in submission.comments:
         author = comment.author
-        if strong and not author.is_mod:
-            if text_processor.is_strong(comment.body):
+        # TODO: AttributeError: 'NoneType' object has no attribute 'is_mod'
+        try:
+            if strong and not author.is_mod:
+                if text_processor.is_strong(comment.body):
+                    comments.add(comment)
+                    database.comments.store_comment(comment.id, submission.id, len(comment.body), text_processor.is_strong(comment.body))
+            elif not author.is_mod:
                 comments.add(comment)
                 database.comments.store_comment(comment.id, submission.id, len(comment.body), text_processor.is_strong(comment.body))
-        elif not author.is_mod:
-            comments.add(comment)
-            database.comments.store_comment(comment.id, submission.id, len(comment.body), text_processor.is_strong(comment.body))
+        except:
+            # TODO: figure out this problem
+            pass
 
         database.submissions.update_submission(submission.id, 'scraped')
 

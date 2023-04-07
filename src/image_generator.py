@@ -67,17 +67,17 @@ def draw_submission(submission, save_path, file_name, title=False, body=False):
     if not title and not body:
         return 0
     
-    # TODO: make font available independent of OS
-    header_font = ImageFont.truetype('C:\\Windows\\fonts\\Verdana.ttf', 18)
-    title_font = ImageFont.truetype('C:\\Windows\\fonts\\Verdana.ttf', 30) 
-    body_font = ImageFont.truetype('C:\\Windows\\fonts\\Verdana.ttf', 22) 
+    verdana = os.path.join('fonts', 'VERDANA.TTF')
+    header_font = ImageFont.truetype(verdana, 18)
+    title_font = ImageFont.truetype(verdana, 30) 
+    body_font = ImageFont.truetype(verdana, 22) 
     
     padding = 16
     image_width = 900
     max_width = image_width - 2 * padding
     image_height = 2 * padding
     
-    header = f'@askredditts.x • r/{submission.subreddit.display_name} • Follow for more content!'
+    header = f'@reddificatory • r/{submission.subreddit.display_name} • Follow for more content!'
     wrapped_header = text_processor.wrap_text(header, max_width, header_font)
     wrapped_title = ''
     wrapped_body = ''
@@ -115,8 +115,9 @@ def draw_submission(submission, save_path, file_name, title=False, body=False):
     image.save(os.path.join(save_path, file_name), 'PNG')
 
 def draw_comment(comment, save_path, file_index, file_name):
-    username_font = ImageFont.truetype('C:\\Windows\\fonts\\Verdana.ttf', 26)
-    body_font = ImageFont.truetype('C:\\Windows\\fonts\\Verdana.ttf', 28)
+    verdana = os.path.join('fonts', 'VERDANA.TTF')
+    username_font = ImageFont.truetype(verdana, 26)
+    body_font = ImageFont.truetype(verdana, 28)
 
     padding = 16
     image_width = 900
