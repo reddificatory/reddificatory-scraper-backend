@@ -1,7 +1,6 @@
 import os
 import config
 import file
-import text_processor
 import text_to_speech
 import database.submissions
 import database.comments

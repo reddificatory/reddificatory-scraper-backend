@@ -1,7 +1,6 @@
 import os
 import sys
-sys.path.insert(0, os.getcwd() + '/src')
-
+sys.path.insert(0, os.path.join(os.getcwd(), 'src'))
 import config
 
 def get_save_path(root_path, submission_id):

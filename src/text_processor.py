@@ -12,12 +12,6 @@ def is_strong(text):
     
     return False
 
-# def get_font_height():
-#     True
-
-# def get_textbox_size():
-#     True
-
 def remove_duplicate_newlines(text):
     return re.sub('\n+', '\n', text).strip()
 

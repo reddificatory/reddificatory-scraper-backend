@@ -1,11 +1,10 @@
 import os
 import sys
-sys.path.insert(0, os.getcwd() + '/src')
+sys.path.insert(0, os.path.join(os.getcwd(), 'src'))
 from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageColor
 import urllib.request
 import file
 import audio
-import config
 import glob
 import text_processor
 import file
