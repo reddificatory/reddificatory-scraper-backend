@@ -87,7 +87,7 @@ def merge_final_video(save_path):
     save_path = os.path.join(current_directory, save_path)
     os.chdir(save_path)
 
-    command = f'ffmpeg -i background.mp4 -i merged.mp4 -i merged.wav -filter_complex "[1:v][0:v]scale2ref=iw*0.9:ow/mdar[ovrl][backgr];[backgr][ovrl]overlay=(W-w)/2:(H-h)/2[outv]" -map [outv] -map 2:a video.mp4'
+    command = f'ffmpeg -i background.mp4 -i merged.mp4 -i merged.wav -filter_complex "[1:v][0:v]scale2ref=iw*0.9:ow/mdar[ovrl][backgr];[backgr][ovrl]overlay=(W-w)/2:(H-h)/2[outv]" -map [outv] -shortest -map 2:a video.mp4'
     os.system(command)
 
     os.chdir(current_directory)

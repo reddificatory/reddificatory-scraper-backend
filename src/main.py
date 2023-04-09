@@ -9,15 +9,17 @@ import image_generator
 import video_generator
 import audio
 import logger
+import logging
 import plyer
 
     # TODO: implement -a/--scrape option to run the scraper automatically if the submission is not scraped yet
     # TODO: rewrite database queries to suite the new options
     # TODO: rewrite video creation
-        # get specific bg vid
-        # merge background video, overlay and audio
+        # different tts voices
         # vertical and landscape mode
+        # watermark
     # TODO: implement markdown
+    # TODO: log titles and paths in a file
     # TODO: implement bot comment filtering
 
 argument_parser = argparse.ArgumentParser()
@@ -50,6 +52,8 @@ def main():
     tts_texts = []
     comments = []
 
+    logging.basicConfig(level=logging.INFO, filename=os.path.join(save_path, '..', 'titles.txt'), filemode='w', fromat='%(message)s')
+
     if arguments.title and arguments.body:
         tts_texts.append(f'{submission.title}\n{submission.selftext}')
     elif arguments.title:
@@ -73,6 +77,7 @@ def main():
     video_generator.run(save_path)
     database.submissions.update_submission(submission_id, 'used')
     logger.logger.info(f'Video saved to: {save_path}')
+    logging.info(f'{submission.title};{save_path}')
     plyer.notification.notify(title='Video generation', message=f'Video saved to {save_path}', app_name='Reddificatory Video Generator')
 
 if __name__ == '__main__':
