@@ -9,6 +9,7 @@ import image_generator
 import video_generator
 import audio
 import logger
+import plyer
 
     # TODO: implement -a/--scrape option to run the scraper automatically if the submission is not scraped yet
     # TODO: rewrite database queries to suite the new options
@@ -72,6 +73,7 @@ def main():
     video_generator.run(save_path)
     database.submissions.update_submission(submission_id, 'used')
     logger.logger.info(f'Video saved to: {save_path}')
+    plyer.notification.notify(title='Video generation', message=f'Video saved to {save_path}', app_name='Reddificatory Video Generator')
 
 if __name__ == '__main__':
     main()

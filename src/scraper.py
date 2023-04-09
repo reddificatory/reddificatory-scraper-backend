@@ -7,6 +7,7 @@ import database.submissions
 import database.comments
 import logger
 import argparse
+import plyer
 
 def get_submissions(subreddit, strong):
     client = config.REDDIT_CLIENT
@@ -77,6 +78,8 @@ def main():
 
     if arguments.subreddit:
         scrape(arguments.subreddit, arguments.strong)
+
+    plyer.notification.notify(title='Reddit scraping', message=f'Finished scraping', app_name='Reddificatory Reddit Scarper')
     
 if __name__ == '__main__':
     main()
