@@ -9,13 +9,16 @@ import logger
 import argparse
 import plyer
 
-def get_submissions(subreddit, strong):
-    client = config.REDDIT_CLIENT
-    subreddit = client.subreddit(subreddit)
+def get_submissions(subreddit, strong, limit):
+    subreddit = config.REDDIT_CLIENT.subreddit(subreddit)
     submissions = set()
+
+    if not limit:
+        limit = len(subreddit.hot())
     
     logger.logger.debug(f'Getting submissions from {subreddit}...')
-    for submission in subreddit.hot(limit = 25):
+
+    for submission in subreddit.hot(limit=int(limit)):
         if strong:
             if text_processor.is_strong(submission.title):
                 submissions.add(submission)
@@ -26,36 +29,46 @@ def get_submissions(subreddit, strong):
 
     return submissions
 
-def get_comments(submission_id, strong):
+def get_comments(submission_id, strong, limit):
     submission = config.REDDIT_CLIENT.submission(submission_id)
+    submission.comments.replace_more(limit=0)
+    unscraped_comments = submission.comments
     comments = set()
 
+    if not limit or limit > len(unscraped_comments):
+        limit = len(unscraped_comments)
+
     logger.logger.debug(f'Getting comments from {submission.id}...')
-    submission.comments.replace_more(limit=0)
-    for comment in submission.comments:
+
+    i = 0
+    while i < int(limit):
+        comment = unscraped_comments[i]
         author = comment.author
+
         # TODO: AttributeError: 'NoneType' object has no attribute 'is_mod'
+        # TODO: find another method of identifying bots because is_mod is broken
         try:
-            if strong and not author.is_mod:
-                if text_processor.is_strong(comment.body):
-                    comments.add(comment)
-                    database.comments.store_comment(comment.id, submission.id, len(comment.body), text_processor.is_strong(comment.body))
-            elif not author.is_mod:
+            if strong and text_processor.is_strong(comment.body):
+                comments.add(comment)
+                database.comments.store_comment(comment.id, submission.id, len(comment.body), text_processor.is_strong(comment.body))
+            else:
                 comments.add(comment)
                 database.comments.store_comment(comment.id, submission.id, len(comment.body), text_processor.is_strong(comment.body))
         except:
             # TODO: figure out this problem
             pass
 
+        i += 1
+
         database.submissions.update_submission(submission.id, 'scraped')
 
     return comments
 
-def scrape(subreddit, strong):
-    submissions = get_submissions(subreddit, strong)
+def scrape(subreddit, strong, limit_submissions, limit_comments):
+    submissions = get_submissions(subreddit, strong, limit_submissions)
 
     for submission in submissions:
-        get_comments(submission.id, strong)
+        get_comments(submission.id, strong, limit_comments)
 
     logger.logger.debug("Scraping done.")
 
@@ -64,20 +77,22 @@ subreddit_submission_group = argument_parser.add_mutually_exclusive_group(requir
 subreddit_submission_group.add_argument('-s', '--subreddit', dest='subreddit', help='Subreddit to scrape')
 subreddit_submission_group.add_argument('-u', '--submission', dest='submission', help='Submission to scrape')
 argument_parser.add_argument('-S', '--strong', dest='strong', action='store_true', help='Scrape stuff with strong sentiments only')
+argument_parser.add_argument('-l', '--limit-submissions', dest='limit_submissions', default=25, help='Limit submission count')
+argument_parser.add_argument('-L', '--limit-comments', dest='limit_comments', default=25, help='Limit comment count')
 arguments = argument_parser.parse_args()
 
 def main():
-    if arguments.submission and arguments.strong:
-        argument_parser.error('The -S/--strong is not valid with the -u/--submission option')
-    
+    if arguments.limit_submissions and arguments.submission:
+        argument_parser.error('-l/--limit is invalid with -u/--submission.')
+
     if arguments.submission:
         submission = config.REDDIT_CLIENT.submission(arguments.submission)
         database.submissions.store_submission(submission.subreddit, submission.id, text_processor.is_strong(submission.title))
         print(arguments)
-        comments = get_comments(arguments.submission, arguments.strong)
+        comments = get_comments(arguments.submission, arguments.strong, arguments.limit_comments)
 
     if arguments.subreddit:
-        scrape(arguments.subreddit, arguments.strong)
+        scrape(arguments.subreddit, arguments.strong, arguments.limit_submissions, arguments.limit_comments)
 
     plyer.notification.notify(title='Reddit scraping', message=f'Finished scraping', app_name='Reddificatory Reddit Scarper')
     
