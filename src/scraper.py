@@ -19,8 +19,7 @@ def get_submissions(subreddit, strong, limit):
     logger.logger.debug(f'Getting submissions from {subreddit}...')
 
     for submission in subreddit.hot(limit=int(limit)):
-        if strong:
-            if text_processor.is_strong(submission.title):
+        if strong and text_processor.is_strong(submission.title):
                 submissions.add(submission)
                 database.submissions.store_submission(subreddit, submission.id, text_processor.is_strong(submission.title))
         else:
