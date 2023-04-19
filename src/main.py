@@ -11,6 +11,7 @@ import audio
 import logger
 import logging
 import plyer
+import scraper
 
     # TODO: implement -a/--scrape option to run the scraper automatically if the submission is not scraped yet
     # TODO: rewrite database queries to suite the new options
@@ -28,9 +29,12 @@ subreddit_submission_group.add_argument('-S', '--submission', dest='submission',
 subreddit_submission_group.add_argument('-s', '--subreddit', dest='subreddit', help='Specify subreddit.')
 argument_parser.add_argument('-t', '--title', action='store_true', dest='title', help='Enable submission title')
 argument_parser.add_argument('-b', '--body', action='store_true', dest='body', help='Enable submission body')
-argument_parser.add_argument('-l', '--max-length', dest='max_length', help='Specify max length of comments in characters.')
-argument_parser.add_argument('-c', '--comments', dest='comments', default=3, help='Set number of comments. -1: all comments, 0: no comments, number: number of comments.')
+argument_parser.add_argument('-l', '--max-length', type=int, dest='max_length', help='Specify max length of comments in characters.')
+argument_parser.add_argument('-c', '--comments', type=int, dest='comments', default=3, help='Set number of comments. -1: all comments, 0: no comments, number: number of comments.')
 argument_parser.add_argument('-o', '--strong', action='store_true', dest='strong', help='Set only strong option to true')
+argument_parser.add_argument('-a', '--auto-scrape', action='store_true', dest='auto_scrape', help='Run scraper automatically if there are no scraped submissions in the database.')
+argument_parser.add_argument('-i', '--limit-submissions', dest='limit_submissions', default=25, help='Scraper: limit submission count')
+argument_parser.add_argument('-I', '--limit-comments', dest='limit_comments', default=25, help='Scraper: limit comment count')
 arguments = argument_parser.parse_args()
 
 def main():
@@ -43,11 +47,11 @@ def main():
         submission_id = database.submissions.get_random_submission(arguments.subreddit)
 
     if arguments.max_length:
-        comment_max_length = int(arguments.max_length)
+        comment_max_length = arguments.max_length
 
     submission = config.REDDIT_CLIENT.submission(submission_id)
     save_path = file.get_save_path(os.path.join(os.getcwd(), 'media', 'reddit'), submission_id)
-    comment_count = int(arguments.comments)
+    comment_count = arguments.comments
     strong = arguments.strong
     tts_texts = []
     comments = []

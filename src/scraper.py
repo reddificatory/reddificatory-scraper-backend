@@ -18,8 +18,9 @@ def get_submissions(subreddit, strong, limit):
     
     logger.logger.debug(f'Getting submissions from {subreddit}...')
 
-    for submission in subreddit.hot(limit=int(limit)):
-        if strong and text_processor.is_strong(submission.title):
+    for submission in subreddit.hot(limit=limit):
+        if strong:
+            if text_processor.is_strong(submission.title):
                 submissions.add(submission)
                 database.submissions.store_submission(subreddit, submission.id, text_processor.is_strong(submission.title))
         else:
@@ -40,22 +41,19 @@ def get_comments(submission_id, strong, limit):
     logger.logger.debug(f'Getting comments from {submission.id}...')
 
     i = 0
-    while i < int(limit):
+    while i < limit:
         comment = unscraped_comments[i]
         author = comment.author
 
         # TODO: AttributeError: 'NoneType' object has no attribute 'is_mod'
         # TODO: find another method of identifying bots because is_mod is broken
-        try:
-            if strong and text_processor.is_strong(comment.body):
+        if strong:
+            if text_processor.is_strong(comment.body):
                 comments.add(comment)
                 database.comments.store_comment(comment.id, submission.id, len(comment.body), text_processor.is_strong(comment.body))
-            else:
-                comments.add(comment)
-                database.comments.store_comment(comment.id, submission.id, len(comment.body), text_processor.is_strong(comment.body))
-        except:
-            # TODO: figure out this problem
-            pass
+        else:
+            comments.add(comment)
+            database.comments.store_comment(comment.id, submission.id, len(comment.body), text_processor.is_strong(comment.body))
 
         i += 1
 
@@ -63,7 +61,12 @@ def get_comments(submission_id, strong, limit):
 
     return comments
 
-def scrape(subreddit, strong, limit_submissions, limit_comments):
+def scrape_submission(submission_id, strong, limit):
+    submission = config.REDDIT_CLIENT.submission(submission_id)
+    database.submissions.store_submission(submission.subreddit, submission.id, text_processor.is_strong(submission.title))
+    comments = get_comments(submission.id, strong, limit)
+
+def scrape_subreddit(subreddit, strong, limit_submissions, limit_comments):
     submissions = get_submissions(subreddit, strong, limit_submissions)
 
     for submission in submissions:
@@ -76,8 +79,8 @@ subreddit_submission_group = argument_parser.add_mutually_exclusive_group(requir
 subreddit_submission_group.add_argument('-s', '--subreddit', dest='subreddit', help='Subreddit to scrape')
 subreddit_submission_group.add_argument('-u', '--submission', dest='submission', help='Submission to scrape')
 argument_parser.add_argument('-S', '--strong', dest='strong', action='store_true', help='Scrape stuff with strong sentiments only')
-argument_parser.add_argument('-l', '--limit-submissions', dest='limit_submissions', default=25, help='Limit submission count')
-argument_parser.add_argument('-L', '--limit-comments', dest='limit_comments', default=25, help='Limit comment count')
+argument_parser.add_argument('-l', '--limit-submissions', type=int, dest='limit_submissions', default=25, help='Limit submission count')
+argument_parser.add_argument('-L', '--limit-comments', type=int, dest='limit_comments', default=25, help='Limit comment count')
 arguments = argument_parser.parse_args()
 
 def main():
@@ -85,13 +88,10 @@ def main():
         argument_parser.error('-l/--limit is invalid with -u/--submission.')
 
     if arguments.submission:
-        submission = config.REDDIT_CLIENT.submission(arguments.submission)
-        database.submissions.store_submission(submission.subreddit, submission.id, text_processor.is_strong(submission.title))
-        print(arguments)
-        comments = get_comments(arguments.submission, arguments.strong, arguments.limit_comments)
+        scrape_submission(arguments.submission, arguments.strong, arguments.limit_comments)
 
     if arguments.subreddit:
-        scrape(arguments.subreddit, arguments.strong, arguments.limit_submissions, arguments.limit_comments)
+        scrape_subreddit(arguments.subreddit, arguments.strong, arguments.limit_submissions, arguments.limit_comments)
 
     plyer.notification.notify(title='Reddit scraping', message=f'Finished scraping', app_name='Reddificatory Reddit Scarper')
     

@@ -14,11 +14,6 @@ def update_submission(submission_id, mode):
     database.connection.cursor.execute(f"UPDATE submissions SET {mode} = TRUE, updated_at = (current_timestamp) WHERE submission_id = '{submission_id}'")
     database.connection.database.commit()
 
-#TODO: finish this query and function
-def get_submissions(mode):
-    database.connection.cursor.execute(f"SELECT * FROM submissions WHERE {mode} = FALSE;")
-    return database.connection.cursor.fetchall()
-
 def get_submissions_with_comments(subreddit):
     database.connection.cursor.execute(f"SELECT * FROM submissions WHERE used = FALSE AND scraped = TRUE AND subreddit = '{subreddit}';")
     return database.connection.cursor.fetchall()
@@ -34,12 +29,16 @@ def get_random_submission(subreddit):
     random_submission = submissions[random.randint(0, stop)]    
     return random_submission[0]
 
-def get_random_submission_with_comments():
-    submissions = get_submissions_with_comments()
+# TODO: figure out why it's printing two times
+def get_submission_count(mode):
+    mode_string = ''
 
-    if len(submissions) == 0:
-        return False
+    if mode == 'scraped':
+        mode_string = ' WHERE scraped = true'
 
-    stop = len(submissions) - 1
-    random_submission = submissions[random.randint(0, stop)]    
-    return random_submission[0]
+    if mode == 'used':
+        mode_string = ' WHERE used = true'
+
+    database.connection.cursor.execute(f"SELECT COUNT(*) FROM submissions {mode_string};")
+    
+    return database.connection.cursor.fetchone()[0]
