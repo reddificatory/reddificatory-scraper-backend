@@ -1,23 +1,21 @@
 import os
 import sys
-sys.path.insert(0, os.getcwd() + '/src')
-
+sys.path.insert(0, os.path.join(os.getcwd(), 'src'))
 import config
 
-def get_save_path(submission_id):
+def get_save_path(root_path, submission_id):
     submission = config.REDDIT_CLIENT.submission(submission_id)
     subreddit = submission.subreddit.display_name
-    save_path = f'media\\reddit\\{subreddit}\\{submission_id}'
+    save_path = os.path.join(root_path, subreddit, submission_id)
 
     if not os.path.exists(save_path):
         os.makedirs(save_path)
     
     return save_path
 
-def get_file_name(object_list, index, file_name, file_extension):
-    final_file_name = ''
+def get_index(list_length, index):
     index += 1
-    max_index_length = len(str(len(object_list)))
+    max_index_length = len(str(list_length))
     index_length = len(str(index))
 
     if index_length < max_index_length:
@@ -29,6 +27,4 @@ def get_file_name(object_list, index, file_name, file_extension):
 
         index = f'{zero_digits}{index}'
 
-    final_file_name = f'{file_name}{index}{file_extension}'
-
-    return final_file_name, index
+    return index

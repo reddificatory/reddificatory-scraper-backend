@@ -1,14 +1,13 @@
 import os
 import sys
-sys.path.insert(0, os.getcwd() + '/src')
-
+sys.path.insert(0, os.path.join(os.getcwd(), 'src'))
 import psycopg2
 import config
 
-db = psycopg2.connect(database = config.DB_NAME,
+database = psycopg2.connect(database = config.DB_NAME,
                       host = config.DB_HOST,
                       user = config.DB_USER,
                       password = config.DB_PASS,
                       port = config.DB_PORT)
 
-cursor = db.cursor()
+cursor = database.cursor()
