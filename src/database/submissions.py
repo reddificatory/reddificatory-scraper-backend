@@ -30,14 +30,8 @@ def get_random_submission(subreddit):
     return random_submission[0]
 
 # TODO: figure out why it's printing two times
-def get_submission_count(mode):
-    mode_string = ''
-
-    if mode == 'scraped':
-        mode_string = ' WHERE scraped = true'
-
-    if mode == 'used':
-        mode_string = ' WHERE used = true'
+def get_submission_count(mode, state):
+    mode_string = f' WHERE {mode} = {state}'
 
     database.connection.cursor.execute(f"SELECT COUNT(*) FROM submissions {mode_string};")
     

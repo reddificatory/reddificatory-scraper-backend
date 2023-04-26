@@ -4,7 +4,7 @@ import file
 import text_to_speech
 import database.submissions
 import database.comments
-import argparse
+import argument_parser
 import image_generator
 import video_generator
 import audio
@@ -23,26 +23,26 @@ import scraper
     # TODO: log titles and paths in a file
     # TODO: implement bot comment filtering
 
-argument_parser = argparse.ArgumentParser()
-subreddit_submission_group = argument_parser.add_mutually_exclusive_group(required=True)
-subreddit_submission_group.add_argument('-S', '--submission', dest='submission', help='Specify submission.')
-subreddit_submission_group.add_argument('-s', '--subreddit', dest='subreddit', help='Specify subreddit.')
-argument_parser.add_argument('-t', '--title', action='store_true', dest='title', help='Enable submission title')
-argument_parser.add_argument('-b', '--body', action='store_true', dest='body', help='Enable submission body')
-argument_parser.add_argument('-l', '--max-length', type=int, dest='max_length', help='Specify max length of comments in characters.')
-argument_parser.add_argument('-c', '--comments', type=int, dest='comments', default=3, help='Set number of comments. -1: all comments, 0: no comments, number: number of comments.')
-argument_parser.add_argument('-o', '--strong', action='store_true', dest='strong', help='Set only strong option to true')
-argument_parser.add_argument('-a', '--auto-scrape', action='store_true', dest='auto_scrape', help='Run scraper automatically if there are no scraped submissions in the database.')
-argument_parser.add_argument('-i', '--limit-submissions', dest='limit_submissions', default=25, help='Scraper: limit submission count')
-argument_parser.add_argument('-I', '--limit-comments', dest='limit_comments', default=25, help='Scraper: limit comment count')
-arguments = argument_parser.parse_args()
-
 def main():
+    arguments = argument_parser.argument_parser.parse_args()
     submission_id = None
     comment_max_length = None
+    scapred_submissions_count = database.submissions.get_submission_count('scraped', True)
+    tts_texts = []
+    comments = []
 
-    if arguments.submission:
-        submission_id = arguments.submission
+    if scapred_submissions_count == 0:
+        if arguments.auto_scrape:
+            if arguments.submission_id:
+                scraper.scrape_submission(arguments.submission_id, arguments.strong, arguments.limit_comments)
+            elif arguments.subreddit:
+                scraper.scrape_subreddit(arguments.subreddit, arguments.strong, arguments.limit_submissions, arguments.limit_comments)
+        else:
+            logger.logger.error('No scraped submissions in database. Please run the scraper.')
+            return 1
+
+    if arguments.submission_id:
+        submission_id = arguments.submission_id
     else:
         submission_id = database.submissions.get_random_submission(arguments.subreddit)
 
@@ -51,10 +51,6 @@ def main():
 
     submission = config.REDDIT_CLIENT.submission(submission_id)
     save_path = file.get_save_path(os.path.join(os.getcwd(), 'media', 'reddit'), submission_id)
-    comment_count = arguments.comments
-    strong = arguments.strong
-    tts_texts = []
-    comments = []
 
     logging.basicConfig(level=logging.INFO, filename=os.path.join(save_path, '..', 'titles.txt'), filemode='w', fromat='%(message)s')
 
@@ -65,8 +61,8 @@ def main():
     elif arguments.body:
         tts_texts.append(submission.selftext)
 
-    if comment_count != 0 or comment_count != -1:
-        comment_ids = database.comments.get_comments(submission.id, comment_max_length, comment_count, strong)
+    if arguments.comments_count != 0 or arguments.comments_count != -1:
+        comment_ids = database.comments.get_comments(submission.id, comment_max_length, arguments.comments_count, arguments.strong)
 
         for comment_id in comment_ids:
             comment = config.REDDIT_CLIENT.comment(comment_id)

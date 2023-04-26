@@ -6,7 +6,7 @@ import text_processor
 import database.submissions
 import database.comments
 import logger
-import argparse
+import argument_parser
 import plyer
 
 def get_submissions(subreddit, strong, limit):
@@ -74,16 +74,9 @@ def scrape_subreddit(subreddit, strong, limit_submissions, limit_comments):
 
     logger.logger.debug("Scraping done.")
 
-argument_parser = argparse.ArgumentParser()
-subreddit_submission_group = argument_parser.add_mutually_exclusive_group(required=True)
-subreddit_submission_group.add_argument('-s', '--subreddit', dest='subreddit', help='Subreddit to scrape')
-subreddit_submission_group.add_argument('-u', '--submission', dest='submission', help='Submission to scrape')
-argument_parser.add_argument('-S', '--strong', dest='strong', action='store_true', help='Scrape stuff with strong sentiments only')
-argument_parser.add_argument('-l', '--limit-submissions', type=int, dest='limit_submissions', default=25, help='Limit submission count')
-argument_parser.add_argument('-L', '--limit-comments', type=int, dest='limit_comments', default=25, help='Limit comment count')
-arguments = argument_parser.parse_args()
-
 def main():
+    arguments = argument_parser.argument_parser.parse_args()
+
     if arguments.limit_submissions and arguments.submission:
         argument_parser.error('-l/--limit is invalid with -u/--submission.')
 
